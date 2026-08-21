@@ -12,7 +12,7 @@ import React from 'react'
 
 import type { Media, Post } from '@/payload-types'
 
-import { getDocPath } from '@/utilities/collectionPrefixMap'
+import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL } from '@/utilities/getURL'
 import { SITE } from '@/utilities/site'
 
@@ -21,7 +21,7 @@ const HEADLINE_MAX = 110
 
 export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
   const site = getPublicSiteURL()
-  const url = `${site}${getDocPath('posts', post.slug)}`
+  const url = `${site}${getPublicDocPath('posts', post.slug, post.legacyPath)}`
 
   const image =
     post.meta?.image && typeof post.meta.image === 'object'
