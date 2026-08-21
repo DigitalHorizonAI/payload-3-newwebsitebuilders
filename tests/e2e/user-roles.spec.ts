@@ -96,7 +96,7 @@ test.describe('user roles', () => {
   test('an editor can write and change articles', async ({ request }) => {
     // The reason the account exists. If this fails, roles have not made the CMS
     // safer, they have broken it. This CMS is a blog, so an editor's job is
-    // posts — the FamEasy equivalent of this test drives its site-copy globals,
+    // posts — the sibling CMSs drive site-copy globals in their version of this test,
     // which do not exist here.
     const lexical = (text: string) => ({
       root: {

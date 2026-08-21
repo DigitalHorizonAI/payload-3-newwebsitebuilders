@@ -9,7 +9,7 @@ import { Logo } from '@/components/Logo/Logo'
 import { ANNOUNCEMENT, MOBILE_LINKS, NAV_LEFT, NAV_RIGHT, type NavLink } from '@/site'
 
 /**
- * The main site's header, ported from the seo-2ahealthylife repo's Layout.tsx: an
+ * The main site's header, ported from the marketing site's layout: an
  * announcement bar, then a sticky bar with links flanking a centered
  * wordmark. One deliberate difference: where the main site has its cart
  * icon, the blog has a search icon — this site has articles, not a cart.

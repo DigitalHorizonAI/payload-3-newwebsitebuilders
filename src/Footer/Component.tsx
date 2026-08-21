@@ -12,7 +12,7 @@ import {
 } from '@/site'
 
 /**
- * The main site's footer, ported from the seo-2ahealthylife repo's Layout.tsx. Like
+ * The main site's footer, ported from the marketing site's layout. Like
  * the header, it is code-owned (src/site.ts) and deliberately NOT read from
  * the Payload `footer` global — editing navItems in the CMS has no effect.
  */

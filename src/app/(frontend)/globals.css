@@ -5,7 +5,7 @@
 @layer base {
   /*
    * The newwebsite.builders palette, copied verbatim from the main site's
-   * src/index.css (the seo-2ahealthylife repo) so the blog read as part of the
+   * the marketing site's stylesheet so the blog read as part of the
    * site: warm paper ground, near-black ink, hairline borders doing the
    * structural work, and a muted green reserved for success states.
    * Tailwind wraps every one of these in hsl(), so they must stay as bare
