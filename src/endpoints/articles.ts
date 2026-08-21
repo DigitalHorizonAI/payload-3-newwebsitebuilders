@@ -17,7 +17,7 @@ import type { Category, Media, Post } from '@/payload-types'
 
 import { convertLexicalToHTMLAsync } from '@payloadcms/richtext-lexical/html-async'
 
-import { getDocPath } from '@/utilities/collectionPrefixMap'
+import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL } from '@/utilities/getURL'
 
 // High enough that every consumer fetches the whole blog in one request. The
@@ -68,8 +68,7 @@ const titles = (docs: unknown): string[] =>
  * URLs is not something a CMS migration should do silently. New articles have
  * no legacy path and use the slug.
  */
-const publicPath = (post: Post) =>
-  post.legacyPath ? `/blog/${String(post.legacyPath).replace(/^\/+/, '')}` : getDocPath('posts', post.slug)
+const publicPath = (post: Post) => getPublicDocPath('posts', post.slug, post.legacyPath)
 
 /**
  * Who the article is by. Articles that predate the CMS arrived with an author
@@ -93,7 +92,7 @@ const toListing = (post: Post) => ({
   coverImage: imageURL(post.meta?.image),
   categories: titles(post.categories),
   authors: bylines(post),
-  url: `${getPublicSiteURL()}${getDocPath('posts', post.slug)}`,
+  url: `${getPublicSiteURL()}${publicPath(post)}`,
   meta: {
     title: post.meta?.title ?? post.title,
     description: post.meta?.description ?? null,
@@ -148,7 +147,7 @@ const contentHTML = async (post: Post, payload: PayloadRequest['payload']): Prom
 const toArticle = (post: Post) => ({
   ...toListing(post),
   content: post.content,
-  canonicalUrl: `${getPublicSiteURL()}${getDocPath('posts', post.slug)}`,
+  canonicalUrl: `${getPublicSiteURL()}${publicPath(post)}`,
   updatedAt: post.updatedAt ?? null,
   relatedPosts: Array.isArray(post.relatedPosts)
     ? post.relatedPosts

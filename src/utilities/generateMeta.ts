@@ -4,7 +4,7 @@ import type { Page, Post } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getPublicSiteURL } from './getURL'
-import { getDocPath } from './collectionPrefixMap'
+import { getPublicDocPath } from './collectionPrefixMap'
 import { SITE } from './site'
 
 export const generateMeta = async (args: {
@@ -30,7 +30,9 @@ export const generateMeta = async (args: {
   // Canonical + og:url must be the public address of this document. Without
   // this, the same article served from both the CMS host and the public
   // domain competes with itself in search results.
-  const path = doc?.slug ? getDocPath(collection, doc.slug) : ''
+  const path = doc?.slug
+    ? getPublicDocPath(collection, doc.slug, (doc as Partial<Post>)?.legacyPath)
+    : ''
   const canonical = `${siteURL}${path}`
 
   return {

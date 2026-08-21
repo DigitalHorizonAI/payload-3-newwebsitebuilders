@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getPublicSiteURL } from '@/utilities/getURL'
-import { getDocPath } from '@/utilities/collectionPrefixMap'
+import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
 
 /**
  * Lists published articles so search engines can discover them without waiting
@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     limit: 1000,
     overrideAccess: false,
     pagination: false,
-    select: { slug: true, updatedAt: true },
+    select: { slug: true, updatedAt: true, legacyPath: true },
     where: { _status: { equals: 'published' } },
   })
 
@@ -39,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const doc of posts.docs) {
     if (!doc.slug) continue
     entries.push({
-      url: `${siteURL}${getDocPath('posts', doc.slug)}`,
+      url: `${siteURL}${getPublicDocPath('posts', doc.slug, doc.legacyPath)}`,
       lastModified: doc.updatedAt ? new Date(doc.updatedAt) : undefined,
       changeFrequency: 'monthly',
       priority: 0.7,
