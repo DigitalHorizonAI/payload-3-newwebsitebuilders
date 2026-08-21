@@ -3,84 +3,55 @@
 @tailwind utilities;
 
 @layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: auto;
-    font-weight: auto;
-  }
-
+  /*
+   * The newwebsite.builders palette, copied verbatim from the main site's
+   * the marketing site's stylesheet so the blog read as part of the
+   * site: warm paper ground, near-black ink, hairline borders doing the
+   * structural work, and a muted green reserved for success states.
+   * Tailwind wraps every one of these in hsl(), so they must stay as bare
+   * HSL triplets — a hex value here silently produces no colour at all.
+   */
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 40 25% 97%; /* #F9F6F0 warm paper */
+    --foreground: 30 10% 12%; /* #211F1C ink */
 
-    --card: 240 5% 96%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 40 20% 99%;
+    --card-foreground: 30 10% 12%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 40 20% 99%;
+    --popover-foreground: 30 10% 12%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 30 10% 12%;
+    --primary-foreground: 40 25% 97%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 35 20% 93%;
+    --secondary-foreground: 30 10% 12%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 35 15% 92%;
+    --muted-foreground: 30 8% 46%; /* #7E7770 */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Muted green. The main site uses it only as a success/positive accent
+       (coupons, in-stock, confirmations) — never as a brand colour. */
+    --accent: 145 20% 38%; /* #4E7A5F */
+    --accent-foreground: 40 25% 97%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 40 25% 97%;
 
-    --border: 240 6% 90%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 35 15% 88%; /* #E5DFD7 */
+    --input: 35 15% 88%;
+    --ring: 30 10% 12%;
 
-    --radius: 0.2rem;
+    /* 4px — effectively square. The design uses borders, not rounding. */
+    --radius: 0.25rem;
 
     --success: 196 52% 74%;
     --warning: 34 89% 85%;
     --error: 10 100% 86%;
-  }
 
-  [data-theme='dark'] {
-    --background: 0 0% 0%;
-    --foreground: 210 40% 98%;
-
-    --card: 0 0% 4%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 0, 0%, 15%, 0.5;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --success: 196 100% 14%;
-    --warning: 34 51% 25%;
-    --error: 10 39% 43%;
+    /* Fed by next/font in the frontend layout. */
+    --font-display: var(--font-cormorant), Georgia, serif;
+    --font-body: var(--font-dm-sans), sans-serif;
   }
 }
 
@@ -90,14 +61,162 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+
+  /*
+   * Keyboard focus only, so a mouse click doesn't leave a ring. The site's
+   * ring token is the ink colour, visible on paper and card alike.
+   */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /*
+   * The header is sticky, so an anchor jump or a tab stop near the top of the
+   * page would land underneath it (WCAG 2.4.11).
+   */
+  :target,
+  h1,
+  h2,
+  h3,
+  a,
+  button,
+  input,
+  textarea,
+  select {
+    scroll-margin-top: 7rem;
   }
 }
 
-html {
-  opacity: 0;
+@layer components {
+  /* The site's headline voice: display serif, tight, calm. */
+  .editorial-heading {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  /* Uppercase micro-type used for nav links, labels, chips and buttons. */
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Article prose — the main site's .cms-article-content rules, verbatim. */
+  .article-prose {
+    @apply text-muted-foreground leading-relaxed;
+  }
+  .article-prose h2 {
+    font-family: var(--font-display);
+    @apply text-2xl text-foreground mt-12 mb-4 leading-tight;
+  }
+  .article-prose h3 {
+    font-family: var(--font-display);
+    @apply text-xl text-foreground mt-8 mb-3 leading-snug;
+  }
+  .article-prose p {
+    @apply mb-5 leading-relaxed;
+  }
+  .article-prose a {
+    @apply text-foreground underline underline-offset-4 decoration-foreground/40 hover:decoration-foreground transition-colors font-medium;
+  }
+  .article-prose strong {
+    @apply font-semibold text-foreground;
+  }
+  .article-prose ul,
+  .article-prose ol {
+    @apply pl-6 mb-5 space-y-2;
+  }
+  .article-prose ul {
+    @apply list-disc;
+  }
+  .article-prose ol {
+    @apply list-decimal;
+  }
+  .article-prose li {
+    @apply leading-relaxed;
+  }
+  .article-prose img {
+    @apply w-full rounded-sm my-8 aspect-[16/9] object-cover;
+  }
+  .article-prose figure {
+    @apply my-8;
+  }
+  .article-prose figure img {
+    @apply my-0;
+  }
+  .article-prose figcaption {
+    @apply text-sm text-muted-foreground mt-2 text-center;
+  }
+  .article-prose blockquote {
+    @apply border-l-2 border-border pl-5 my-6 italic text-foreground/80;
+  }
+  .article-prose table {
+    @apply w-full my-8 text-sm;
+  }
+  .article-prose thead {
+    @apply border-b border-border;
+  }
+  .article-prose th {
+    @apply text-left py-3 px-4 font-semibold text-foreground text-xs tracking-[0.1em] uppercase;
+  }
+  .article-prose td {
+    @apply py-3 px-4 border-b border-border;
+  }
+  .article-prose hr {
+    @apply my-10 border-border;
+  }
+  .article-prose br {
+    @apply hidden;
+  }
+
+  /*
+   * Fade-and-rise on entry, matching the main site's FadeIn: 16px, 0.7s.
+   * Hidden from the very first paint, so there is nothing to flash: the server
+   * already renders this state and <Reveal> only ever adds .is-visible. The
+   * <noscript> block in layout.tsx un-hides these when JavaScript is off.
+   */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s ease-out,
+      transform 0.7s ease-out;
+  }
+
+  .fade-in.is-visible {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-html[data-theme='dark'],
-html[data-theme='light'] {
-  opacity: initial;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transform: none;
+  }
 }

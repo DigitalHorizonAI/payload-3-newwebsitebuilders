@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url'
 
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
+import { contentWriter } from '../access/contentWriter'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -17,10 +18,14 @@ const dirname = path.dirname(filename)
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
-    create: authenticated,
-    delete: authenticated,
+    // An API key manages the blog's images alongside its articles: replacing a
+    // cover or removing one that is no longer used is part of the same job as
+    // uploading it. Media is public to read by design — these are the images on
+    // the live site.
+    create: contentWriter,
+    delete: contentWriter,
     read: anyone,
-    update: authenticated,
+    update: contentWriter,
   },
   fields: [
     {

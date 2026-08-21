@@ -5,7 +5,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
-import { homeStatic } from '@/endpoints/seed/home-static'
+import { homeStatic } from './homeStatic'
 
 import type { Page as PageType } from '@/payload-types'
 
@@ -82,7 +82,7 @@ export async function generateMetadata({ params: paramsPromise }): Promise<Metad
     slug,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta({ doc: page, collection: 'pages' })
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {

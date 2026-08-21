@@ -21,6 +21,35 @@ const env = {
 
 const isWindows = process.platform === 'win32'
 
+/**
+ * How to invoke pnpm here.
+ *
+ * This used to be `corepack pnpm` unconditionally. Node 25 no longer ships
+ * corepack, so on a current Node the whole e2e harness died before the first
+ * test with "'corepack' is not recognized" — and, because the teardown still
+ * ran, it took the local postgres container and its volume with it.
+ *
+ * Corepack is still preferred where it exists: it honours the `packageManager`
+ * pin in package.json. Falling back to whatever pnpm is on PATH is right for a
+ * machine that has none, and package.json's pin is the thing to check if a
+ * version mismatch is ever suspected.
+ */
+const pnpmCommand = (() => {
+  try {
+    execFileSync(isWindows ? 'cmd.exe' : 'corepack', isWindows ? ['/c', 'corepack', '--version'] : ['--version'], {
+      stdio: 'ignore',
+    })
+    return ['corepack', 'pnpm']
+  } catch {
+    return ['pnpm']
+  }
+})()
+
+function pnpm(args) {
+  const [command, ...prefix] = pnpmCommand
+  run(command, [...prefix, ...args])
+}
+
 function run(command, args) {
   if (isWindows) {
     execFileSync('cmd.exe', ['/c', command, ...args], {
@@ -79,16 +108,16 @@ async function main() {
   run('docker', ['compose', 'up', '-d', 'postgres'])
   await waitForPort(postgresPort)
 
-  run('corepack', ['pnpm', 'deps:native'])
-  run('corepack', ['pnpm', 'build'])
+  pnpm(['deps:native'])
+  pnpm(['build'])
 
   const app = isWindows
-    ? spawn('cmd.exe', ['/c', 'corepack', 'pnpm', 'start'], {
+    ? spawn('cmd.exe', ['/c', ...pnpmCommand, 'start'], {
         cwd: repoRoot,
         env,
         stdio: 'inherit',
       })
-    : spawn('corepack', ['pnpm', 'start'], {
+    : spawn(pnpmCommand[0], [...pnpmCommand.slice(1), 'start'], {
         cwd: repoRoot,
         env,
         stdio: 'inherit',

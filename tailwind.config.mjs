@@ -24,21 +24,20 @@ export default {
     'bg-warning/30',
   ],
   theme: {
+    // Matches newwebsite.builders's .container-page: max-w-7xl with
+    // px-5 sm:px-8 lg:px-12 gutters.
     container: {
       center: true,
       padding: {
-        '2xl': '2rem',
-        DEFAULT: '1rem',
-        lg: '2rem',
-        md: '2rem',
-        sm: '1rem',
-        xl: '2rem',
+        DEFAULT: '1.25rem',
+        sm: '2rem',
+        lg: '3rem',
       },
       screens: {
-        '2xl': '86rem',
-        lg: '64rem',
-        md: '48rem',
-        sm: '40rem',
+        '2xl': '80rem',
+        lg: '80rem',
+        md: '80rem',
+        sm: '80rem',
         xl: '80rem',
       },
     },
@@ -91,8 +90,8 @@ export default {
         warning: 'hsl(var(--warning))',
       },
       fontFamily: {
-        mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        sans: ['var(--font-body)', 'sans-serif'],
       },
       keyframes: {
         'accordion-down': {
@@ -104,19 +103,6 @@ export default {
           to: { height: '0' },
         },
       },
-      typography: ({ theme }) => ({
-        DEFAULT: {
-          css: {
-            '--tw-prose-body': 'var(--text)',
-            '--tw-prose-headings': 'var(--text)',
-            h1: {
-              fontSize: '3.5rem',
-              fontWeight: 'normal',
-              marginBottom: '0.25em',
-            },
-          },
-        },
-      }),
     },
   },
 }

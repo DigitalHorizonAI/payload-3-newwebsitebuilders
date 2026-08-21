@@ -22,15 +22,14 @@ export const beforeSyncWithSearch: BeforeSync = async ({ originalDoc, searchDoc,
   if (categories && Array.isArray(categories) && categories.length > 0) {
     // get full categories and keep a flattened copy of their most important properties
     try {
-      const mappedCategories = categories.map((category) => {
-        const { id, title } = category
-
-        return {
-          relationTo: 'categories',
-          id,
-          title,
-        }
-      })
+      // No `id` — see the note in ./fieldOverrides.ts. It is Payload's row
+      // primary key, not ours to set, and setting it used to make the second
+      // post in any category unsaveable. Nothing reads a category id back:
+      // search matches on title.
+      const mappedCategories = categories.map((category) => ({
+        relationTo: 'categories',
+        title: category.title,
+      }))
 
       modifiedDoc.categories = mappedCategories
     } catch (err) {

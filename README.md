@@ -44,16 +44,14 @@ This boilerplate is a pre-configured, ready-to-deploy solution for Payload CMS a
 
 ## Version Info
 
-- **Payload CMS**: `3.88.0`
-- **Next.js**: `16.3.1`
+- **Payload CMS**: `3.85.2`
+- **Next.js**: `16.2.10`
 - **Node.js**: `^18.20.2 || >=20.9.0`
 
 ## Preconfigured Features & Integrations
 
 - **Authentication**: Robust user authentication system
 - **Access Control**: Role-based access control for admins and users
-- **Premium Content**: Gated content for authenticated users
-- **Comments**: User commenting system with admin approval
 - **Layout Builder**: Flexible content creation with pre-configured blocks
 - **Draft Preview**: Preview unpublished content before going live
 - **SEO**: Built-in SEO optimization tools
@@ -79,10 +77,9 @@ or
 
 ### End-to-End Testing
 
-The Playwright suite boots a fresh PostgreSQL container, builds the app from scratch, creates the first admin user through the onboarding UI, seeds the demo content, submits a public comment, approves it in the admin UI, and verifies it appears on the public post page.
+The Playwright suite boots a fresh PostgreSQL container, builds the app from scratch, and exercises the public articles API and the search sync hook.
 
 Before the first run, make sure Docker Desktop is running. The suite starts a fresh PostgreSQL container automatically.
-For test determinism, the e2e harness uses bundled local seed images only during the test run. Normal seeding continues to use the hosted seed images.
 
 1. Install everything required for e2e: `corepack pnpm e2e:install`
 2. Run the suite headlessly: `corepack pnpm test:e2e`

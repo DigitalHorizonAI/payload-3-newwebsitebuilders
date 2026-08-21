@@ -16,10 +16,14 @@ export const RelatedPosts: React.FC<RelatedPostsProps> = (props) => {
   const { className, docs, introContent } = props
 
   return (
-    <div className={clsx('container', className)}>
+    <div className={clsx(className)}>
       {introContent && <RichText content={introContent} enableGutter={false} />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-stretch">
+      {/* The main site's "Continue Reading" section on articles. */}
+      <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">
+        Continue Reading
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-stretch">
         {docs?.map((doc, index) => {
           if (typeof doc === 'string') return null
 
