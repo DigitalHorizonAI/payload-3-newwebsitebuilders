@@ -21,6 +21,16 @@ export const Code: Block = {
           label: 'CSS',
           value: 'css',
         },
+        {
+          label: 'JSON',
+          value: 'json',
+        },
+        {
+          // The imported DNS snippet keeps its hand-written highlight spans
+          // inside the code text itself, so it is not any real language.
+          label: 'Plain / preformatted',
+          value: 'plain',
+        },
       ],
     },
     {

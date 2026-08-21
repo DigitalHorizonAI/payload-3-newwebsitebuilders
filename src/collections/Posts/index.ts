@@ -3,9 +3,11 @@ import type { CollectionConfig } from 'payload'
 import {
   BlockquoteFeature,
   BlocksFeature,
+  EXPERIMENTAL_TableFeature,
   FixedToolbarFeature,
   HeadingFeature,
   HorizontalRuleFeature,
+  InlineCodeFeature,
   InlineToolbarFeature,
   OrderedListFeature,
   UnorderedListFeature,
@@ -110,6 +112,15 @@ export const Posts: CollectionConfig<'posts'> = {
                     UnorderedListFeature(),
                     OrderedListFeature(),
                     BlockquoteFeature(),
+                    // The pre-CMS articles carry inline <code> and comparison
+                    // tables; without these two features the import flattens
+                    // both to plain text — measured on the first import, where
+                    // all 6 tables and every inline code span vanished while
+                    // the 97% text check passed. Blocks in richText live in
+                    // the content jsonb, so neither feature touches the
+                    // database schema.
+                    InlineCodeFeature(),
+                    EXPERIMENTAL_TableFeature(),
                     BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
