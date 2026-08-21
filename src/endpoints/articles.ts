@@ -15,8 +15,7 @@
 import type { Endpoint, PayloadRequest, TypedLocale } from 'payload'
 import type { Category, Media, Post } from '@/payload-types'
 
-import { convertLexicalToHTMLAsync } from '@payloadcms/richtext-lexical/html-async'
-
+import { articleHtml } from '@/lib/articleHtml'
 import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL } from '@/utilities/getURL'
 
@@ -111,47 +110,33 @@ const toListing = (post: Post) => ({
   },
 })
 
-const escape = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-
-/**
- * Images inside article bodies are `mediaBlock` nodes, so the stock converters
- * emit nothing for them. Renders each as a plain figure — the consumers of this
- * API are a React site and two Deno edge functions, none of which can run
- * Payload's own React block components.
- */
-const mediaBlockConverters = (payload: PayloadRequest['payload']) =>
-  (({ defaultConverters }) => ({
-    ...defaultConverters,
-    blocks: {
-      mediaBlock: async ({ node }) => {
-        let media = (node.fields as { media?: unknown })?.media
-        // Depth normally populates this, but a bare ID must still render an
-        // image rather than silently dropping it out of the article.
-        if (typeof media === 'number' || typeof media === 'string') {
-          media = await payload
-            .findByID({ collection: 'media', id: media, depth: 0 })
-            .catch(() => null)
-        }
-        const url = imageURL(media)
-        if (!url) return ''
-        const alt = typeof media === 'object' && media ? ((media as Media).alt ?? '') : ''
-        return `<figure><img src="${escape(url)}" alt="${escape(alt)}" loading="lazy" /></figure>`
-      },
-    },
-  })) as Parameters<typeof convertLexicalToHTMLAsync>[0]['converters']
-
 /**
  * The body as HTML. The websites render article bodies as HTML today and the
  * edge functions that make them indexable read HTML too, so converting here
  * once keeps a Lexical renderer out of all four consumers. `content` stays on
  * the response for anything that wants the structured form.
+ *
+ * `articleHtml` is the hand-rolled serializer whose contract is byte-identity
+ * with the hand-written article source — the import script proves the
+ * round-trip before writing, and this endpoint must keep matching it, or the
+ * static builder republishes every article with changed markup.
  */
 const contentHTML = async (post: Post, payload: PayloadRequest['payload']): Promise<string> => {
   if (!post.content) return ''
-  return convertLexicalToHTMLAsync({
-    converters: mediaBlockConverters(payload),
-    data: post.content as Parameters<typeof convertLexicalToHTMLAsync>[0]['data'],
+  return articleHtml(post.content as Parameters<typeof articleHtml>[0], {
+    resolveMedia: async (id) => {
+      // Depth normally populates the media relation, but a bare ID must still
+      // render an image rather than silently dropping it out of the article.
+      let media: unknown = id
+      if (typeof media === 'number' || typeof media === 'string') {
+        media = await payload
+          .findByID({ collection: 'media', id: media, depth: 0 })
+          .catch(() => null)
+      }
+      const url = imageURL(media)
+      if (!url) return null
+      return { url, alt: typeof media === 'object' && media ? ((media as Media).alt ?? '') : '' }
+    },
   })
 }
 

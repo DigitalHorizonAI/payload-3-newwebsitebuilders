@@ -15,6 +15,8 @@
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "check:access": "cross-env NODE_OPTIONS=--no-deprecation payload run ./scripts/check-access.ts",
     "check:markdown-ingest": "cross-env NODE_OPTIONS=--no-deprecation payload run ./scripts/check-markdown-ingest.ts",
+    "reimport:blog:check": "cross-env NODE_OPTIONS=--no-deprecation REIMPORT_MODE=check payload run ./scripts/reimport-blog-bodies.ts",
+    "reimport:blog:write": "cross-env NODE_OPTIONS=--no-deprecation REIMPORT_MODE=write payload run ./scripts/reimport-blog-bodies.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",

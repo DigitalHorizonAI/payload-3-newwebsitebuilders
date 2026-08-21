@@ -1611,6 +1611,10 @@ export interface CollectionsWidget {
  * via the `definition` "BannerBlock".
  */
 export interface BannerBlock {
+  /**
+   * Small heading above the banner text. The website renders this as the keybox label — "The short version" on the existing articles. Optional; leave empty for a plain banner.
+   */
+  label?: string | null;
   style: 'info' | 'warning' | 'error' | 'success';
   content: {
     root: {
@@ -1636,7 +1640,7 @@ export interface BannerBlock {
  * via the `definition` "CodeBlock".
  */
 export interface CodeBlock {
-  language?: ('typescript' | 'javascript' | 'css') | null;
+  language?: ('typescript' | 'javascript' | 'css' | 'json' | 'plain') | null;
   code: string;
   id?: string | null;
   blockName?: string | null;

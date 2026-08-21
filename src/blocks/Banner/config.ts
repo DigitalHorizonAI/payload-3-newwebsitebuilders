@@ -10,6 +10,14 @@ export const Banner: Block = {
   slug: 'banner',
   fields: [
     {
+      name: 'label',
+      type: 'text',
+      admin: {
+        description:
+          'Small heading above the banner text. The website renders this as the keybox label — "The short version" on the existing articles. Optional; leave empty for a plain banner.',
+      },
+    },
+    {
       name: 'style',
       type: 'select',
       defaultValue: 'info',
