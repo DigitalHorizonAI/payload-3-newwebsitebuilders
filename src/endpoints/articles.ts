@@ -64,17 +64,17 @@ const titles = (docs: unknown): string[] =>
  */
 /**
  * Where the article lives on the public website. Articles that predate the CMS
- * keep the nested path they were already indexed under — changing 400 ranking
- * URLs is not something a CMS migration should do silently. New articles have
- * no legacy path and use the slug.
+ * keep the nested path they were already indexed under — changing a ranking URL
+ * is not something a CMS migration should do silently. New articles have no
+ * legacy path and use the slug.
  */
 const publicPath = (post: Post) => getPublicDocPath('posts', post.slug, post.legacyPath)
 
 /**
  * Who the article is by. Articles that predate the CMS arrived with an author
  * name but no CMS user to link to, so they carry a plain `byline` instead; a
- * linked author always wins. Without this the website would credit 567 migrated
- * articles to the site itself and lose their author markup.
+ * linked author always wins. Without this the website would credit every
+ * migrated article to the site itself and lose its author markup.
  */
 const bylines = (post: Post): string[] => {
   const names = (post.populatedAuthors ?? []).map((a) => a.name).filter(Boolean) as string[]
@@ -88,11 +88,10 @@ const toListing = (post: Post) => ({
   path: publicPath(post),
   // This CMS has a real `excerpt` field - the one or two sentences an editor
   // writes for the index card and the link preview. It is deliberately not the
-  // SEO description, which is written for a search result. The sibling CMSs
-  // have no excerpt field, which is why the endpoint they were ported from
-  // substituted the description; here that silently returned the wrong copy on
-  // every article. The fallback keeps an article without an excerpt showing
-  // something rather than an empty card.
+  // SEO description, which is written for a search result, so reading the
+  // description here returned the wrong copy on every article. The fallback
+  // keeps an article without an excerpt showing something rather than an empty
+  // card.
   excerpt: post.excerpt ?? post.meta?.description ?? null,
   publishedAt: post.publishedAt ?? null,
   coverImage: imageURL(post.meta?.image),

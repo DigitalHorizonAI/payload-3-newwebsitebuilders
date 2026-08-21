@@ -12,6 +12,10 @@ import { expect, test } from '@playwright/test'
 const LISTING_KEYS = [
   'title',
   'slug',
+  // The public address, and the only one a consumer may build a link from.
+  // Articles imported from the old blog keep their indexed /<lang>/<slug>.html
+  // path, so interpolating the slug produces a 404 on the live site.
+  'path',
   'excerpt',
   'publishedAt',
   'coverImage',
@@ -43,6 +47,22 @@ test.describe('public articles API', () => {
     }
   })
 
+  test('excerpt is the editor’s card copy, not the SEO description', async ({ request }) => {
+    const body = await (await request.get('/api/articles?limit=500')).json()
+    test.skip(body.docs.length === 0, 'no published articles to compare')
+
+    // The endpoint falls back to meta.description for an article whose author
+    // left the excerpt blank, so equality on any single article is legitimate.
+    // What must never happen is the fallback swallowing the field entirely —
+    // that is the regression this guards, and it shows up as every article on
+    // the site suddenly reading like a search result.
+    const distinct = body.docs.filter(
+      (d: { excerpt: string | null; meta: { description: string | null } }) =>
+        d.excerpt && d.excerpt !== d.meta.description,
+    )
+    expect(distinct.length, 'at least one article serves its own excerpt').toBeGreaterThan(0)
+  })
+
   test('limit is clamped rather than trusted', async ({ request }) => {
     const res = await request.get('/api/articles?limit=100000')
     expect(res.status()).toBe(200)
@@ -65,11 +85,24 @@ test.describe('public articles API', () => {
     expect(res.status()).toBe(200)
 
     const article = await res.json()
-    for (const key of [...LISTING_KEYS, 'content', 'authors', 'canonicalUrl', 'relatedPosts']) {
+    for (const key of [
+      ...LISTING_KEYS,
+      'content',
+      'contentHtml',
+      // The website renders h1 as markup and keywords into a meta tag. Both are
+      // nullable, so this asserts presence, not truthiness.
+      'h1',
+      'keywords',
+      'authors',
+      'canonicalUrl',
+      'relatedPosts',
+    ]) {
       expect(article, `article key ${key}`).toHaveProperty(key)
     }
     expect(article.slug).toBe(slug)
-    expect(article.canonicalUrl).toContain(`/blog/${slug}`)
+    // Against `path`, not the slug: an imported article's public address is
+    // /blog/<lang>/<slug>.html, so `/blog/${slug}` is not a substring of it.
+    expect(article.canonicalUrl).toContain(article.path)
     expect(Array.isArray(article.relatedPosts)).toBe(true)
   })
 
@@ -77,7 +110,10 @@ test.describe('public articles API', () => {
     const listing = await (await request.get('/api/articles')).json()
     test.skip(listing.docs.length === 0, 'no published articles to render')
 
-    const slug = listing.docs[0].slug
+    const { slug, path } = listing.docs[0]
+    // This app serves its own preview of an article at /blog/<slug>. The
+    // address it ADVERTISES is `path`, which is the public site's — the two are
+    // different on purpose, and the assertions below check the right one.
     const html = await (await request.get(`/blog/${slug}`)).text()
 
     const match = html.match(
@@ -89,7 +125,7 @@ test.describe('public articles API', () => {
     expect(schema['@type']).toBe('BlogPosting')
     expect(schema.headline).toBeTruthy()
     expect(schema.headline.length).toBeLessThanOrEqual(110)
-    expect(schema.url).toContain(`/blog/${slug}`)
+    expect(schema.url).toContain(path)
     expect(schema.publisher?.name).toBeTruthy()
   })
 })
