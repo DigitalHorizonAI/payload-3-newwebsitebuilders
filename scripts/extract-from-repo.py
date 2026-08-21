@@ -47,4 +47,9 @@ for post in C.POSTS:
         }
     out.append(entry)
 
-print(json.dumps({'langs': C.LANGS, 'topics': C.TOPICS, 'author': C.AUTHOR, 'posts': out}, indent=2, ensure_ascii=False))
+# ensure_ascii stays at its default. This prints to stdout and the caller
+# redirects it to a file, so the bytes are written in the shell's encoding, not
+# ours - on Windows that is cp1252, which turned all 54 accents in the Dutch
+# articles into single high bytes that Node then read as U+FFFD. ASCII escapes
+# make the file immune to whatever the shell decides to do.
+print(json.dumps({'langs': C.LANGS, 'topics': C.TOPICS, 'author': C.AUTHOR, 'posts': out}, indent=2))

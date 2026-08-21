@@ -38,7 +38,20 @@ const normalise = (s: string) => s.replace(/\s+/g, ' ').trim()
 const run = async () => {
   const payload = await getPayload({ config })
   const editorConfig = await editorConfigFactory.default({ config: payload.config })
-  const source = JSON.parse(readFileSync('scripts/blog-source.json', 'utf8')) as {
+  const raw = readFileSync('scripts/blog-source.json', 'utf8')
+  // extract-from-repo.py writes through a shell redirect, so the encoding is the
+  // shell's and not ours. It emits pure ASCII for exactly that reason. A U+FFFD
+  // here means it did not, and the 54 accents in the Dutch articles would land in
+  // the CMS as garbage - which the 97% length check below cannot see, because a
+  // replacement character is still one character.
+  const replacementChars = (raw.match(/�/g) ?? []).length
+  if (replacementChars > 0) {
+    throw new Error(
+      `blog-source.json holds ${replacementChars} replacement characters. ` +
+        `Re-run: python scripts/extract-from-repo.py > scripts/blog-source.json`,
+    )
+  }
+  const source = JSON.parse(raw) as {
     author: string
     topics: Record<string, Record<string, string>>
     posts: Post[]
