@@ -10,6 +10,7 @@ import { expect, test } from '@playwright/test'
  */
 
 const LISTING_KEYS = [
+  'id',
   'title',
   'slug',
   // The public address, and the only one a consumer may build a link from.
@@ -61,6 +62,28 @@ test.describe('public articles API', () => {
         d.excerpt && d.excerpt !== d.meta.description,
     )
     expect(distinct.length, 'at least one article serves its own excerpt').toBeGreaterThan(0)
+  })
+
+  test('id is the same article in every locale, and nothing else is', async ({ request }) => {
+    const [en, nl] = await Promise.all(
+      ['en', 'nl'].map(async (l) => (await request.get(`/api/articles?locale=${l}&limit=500`)).json()),
+    )
+    test.skip(en.docs.length === 0, 'no published articles to pair')
+
+    // A consumer generating one page per language has to know which Dutch row
+    // is the same article as which English row. Every other field it could
+    // pair on - title, slug, path - is localized and therefore different by
+    // design. This asserts the pairing works AND that it is not a tautology:
+    // if slugs ever stopped being localized the second half would fail and the
+    // first would keep passing, which is the failure worth catching.
+    const byId = new Map(en.docs.map((d: { id: unknown }) => [d.id, d]))
+    for (const doc of nl.docs) {
+      expect(byId.has(doc.id), `nl article ${doc.id} has an en counterpart`).toBe(true)
+    }
+    const translated = nl.docs.filter(
+      (d: { id: unknown; slug: string }) => (byId.get(d.id) as { slug: string }).slug !== d.slug,
+    )
+    expect(translated.length, 'slugs are translated, so id is doing real work').toBeGreaterThan(0)
   })
 
   test('limit is clamped rather than trusted', async ({ request }) => {
