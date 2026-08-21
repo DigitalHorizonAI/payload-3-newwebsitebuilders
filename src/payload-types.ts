@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    apiClients: ApiClientAuthOperations;
   };
   blocks: {};
   collections: {
@@ -72,7 +73,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
-    comments: Comment;
+    apiClients: ApiClient;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -89,7 +90,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
-    comments: CommentsSelect<false> | CommentsSelect<true>;
+    apiClients: ApiClientsSelect<false> | ApiClientsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -102,7 +103,8 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale:
+    ('false' | 'none' | 'null') | false | null | ('en' | 'nl' | 'de' | 'es') | ('en' | 'nl' | 'de' | 'es')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -111,17 +113,35 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'nl' | 'de' | 'es';
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | ApiClient;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface ApiClientAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -184,7 +204,7 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | LogoCloudGridBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -457,8 +477,24 @@ export interface Post {
     };
     [k: string]: unknown;
   };
+  /**
+   * One or two sentences shown on the blog index card and in the link preview. The website needs this for every article; without it the card has a headline and nothing else.
+   */
+  excerpt?: string | null;
+  /**
+   * Optional. The headline as it appears on the article page, where the website sets one word apart — for example: Why hand-coded sites load <span class="editorial">faster</span> than page builders. Leave empty and the plain title is used instead, so a new article never has to hand-write markup.
+   */
+  h1Html?: string | null;
   relatedPosts?: (number | Post)[] | null;
   categories?: (number | Category)[] | null;
+  /**
+   * The path this article already has on the public website, without /blog — for example sleep/insomnia/melatonin-guide. Set during the migration so the website keeps serving its existing addresses and its Google rankings. Leave empty on new articles; they use the slug.
+   */
+  legacyPath?: string | null;
+  /**
+   * Author name shown on the public website. Set during the migration, where articles arrived with an author name but no matching CMS user. Linking a real author above takes priority over this.
+   */
+  byline?: string | null;
   meta?: {
     title?: string | null;
     /**
@@ -466,6 +502,10 @@ export interface Post {
      */
     image?: (number | null) | Media;
     description?: string | null;
+    /**
+     * Comma-separated, carried over from the existing articles. The website writes these into a meta keywords tag.
+     */
+    keywords?: string | null;
   };
   publishedAt?: string | null;
   authors?: (number | User)[] | null;
@@ -488,6 +528,10 @@ export interface Post {
 export interface User {
   id: number;
   name?: string | null;
+  /**
+   * Editors may change all website text and media. Admins may also manage accounts and API keys.
+   */
+  role: 'editor' | 'admin';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -650,6 +694,9 @@ export interface Form {
       )[]
     | null;
   submitButtonLabel?: string | null;
+  /**
+   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
+   */
   confirmationType?: ('message' | 'redirect') | null;
   confirmationMessage?: {
     root: {
@@ -669,6 +716,9 @@ export interface Form {
   redirect?: {
     url: string;
   };
+  /**
+   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   */
   emails?:
     | {
         emailTo?: string | null;
@@ -677,6 +727,9 @@ export interface Form {
         replyTo?: string | null;
         emailFrom?: string | null;
         subject: string;
+        /**
+         * Enter the message that should be sent in this email.
+         */
         message?: {
           root: {
             type: string;
@@ -699,42 +752,27 @@ export interface Form {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LogoCloudGridBlock".
- */
-export interface LogoCloudGridBlock {
-  heading: string;
-  logos: {
-    logo: number | Media;
-    name: string;
-    href?: string | null;
-    id?: string | null;
-  }[];
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'logoCloudGrid';
-}
-/**
- * Comments submitted by visitors on blog posts
+ * API keys for external tools. Each key may create and publish articles and upload media, and can do nothing else.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "comments".
+ * via the `definition` "apiClients".
  */
-export interface Comment {
+export interface ApiClient {
   id: number;
-  content: string;
-  author: {
-    name: string;
-    email: string;
-  };
-  post: number | Post;
   /**
-   * Comments must be approved before they appear publicly
+   * The tool this key belongs to, e.g. "SEO content tool".
    */
-  isApproved?: boolean | null;
-  publishedAt?: string | null;
+  name: string;
+  /**
+   * Who to contact if this key needs revoking.
+   */
+  owner?: string | null;
   updatedAt: string;
   createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  collection: 'apiClients';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -802,8 +840,8 @@ export interface Search {
   categories?:
     | {
         relationTo?: string | null;
-        id?: string | null;
         title?: string | null;
+        id?: string | null;
       }[]
     | null;
   updatedAt: string;
@@ -854,8 +892,8 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'comments';
-        value: number | Comment;
+        relationTo: 'apiClients';
+        value: number | ApiClient;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -874,10 +912,15 @@ export interface PayloadLockedDocument {
         value: number | Search;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'apiClients';
+        value: number | ApiClient;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -887,10 +930,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'apiClients';
+        value: number | ApiClient;
+      };
   key?: string | null;
   value?:
     | {
@@ -951,7 +999,6 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
-        logoCloudGrid?: T | LogoCloudGridBlockSelect<T>;
       };
   meta?:
     | T
@@ -1053,36 +1100,24 @@ export interface FormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "LogoCloudGridBlock_select".
- */
-export interface LogoCloudGridBlockSelect<T extends boolean = true> {
-  heading?: T;
-  logos?:
-    | T
-    | {
-        logo?: T;
-        name?: T;
-        href?: T;
-        id?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
   title?: T;
   content?: T;
+  excerpt?: T;
+  h1Html?: T;
   relatedPosts?: T;
   categories?: T;
+  legacyPath?: T;
+  byline?: T;
   meta?:
     | T
     | {
         title?: T;
         image?: T;
         description?: T;
+        keywords?: T;
       };
   publishedAt?: T;
   authors?: T;
@@ -1205,6 +1240,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1224,21 +1260,16 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "comments_select".
+ * via the `definition` "apiClients_select".
  */
-export interface CommentsSelect<T extends boolean = true> {
-  content?: T;
-  author?:
-    | T
-    | {
-        name?: T;
-        email?: T;
-      };
-  post?: T;
-  isApproved?: T;
-  publishedAt?: T;
+export interface ApiClientsSelect<T extends boolean = true> {
+  name?: T;
+  owner?: T;
   updatedAt?: T;
   createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1425,8 +1456,8 @@ export interface SearchSelect<T extends boolean = true> {
     | T
     | {
         relationTo?: T;
-        id?: T;
         title?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -26,6 +26,17 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
+  /**
+   * Static generation runs one worker per CPU, and every worker opens its own
+   * Postgres pool. On a build machine reporting 17 CPUs that is 17 pools
+   * competing with the running site for connections, and the build dies with
+   * "sorry, too many clients already" partway through the article pages.
+   * Capping the workers bounds the connection count; with hundreds of pages
+   * the build is bound by the database anyway, not by CPU.
+   */
+  experimental: {
+    cpus: 2,
+  },
 }
 
 export default withPayload(nextConfig)

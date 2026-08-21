@@ -1,11 +1,13 @@
-import { HeaderClient } from './Component.client'
-import { getCachedGlobal } from '@/utilities/getGlobals'
 import React from 'react'
 
-import type { Header } from '@/payload-types'
+import { HeaderClient } from './Component.client'
 
-export async function Header() {
-  const header: Header = await getCachedGlobal('header', 1)()
-
-  return <HeaderClient header={header} />
+/**
+ * The navigation is code-owned, defined in src/site.ts, so that it stays
+ * identical to newwebsite.builders's. It is deliberately NOT read from the
+ * Payload `header` global any more — editing navItems in the CMS will have no
+ * effect on what renders here.
+ */
+export function Header() {
+  return <HeaderClient />
 }

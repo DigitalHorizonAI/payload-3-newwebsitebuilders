@@ -5,16 +5,16 @@ This file defines the working rules for automated agents in this repository.
 ## Core Principles
 
 - Prefer maintainable fixes over shortcuts.
-- Do not use dependency overrides as a vulnerability fix.
+- Do not use broad or heavy dependency overrides as a primary solution.
 - Keep the project on properly updated direct dependencies whenever possible.
 - Treat end-to-end verification as mandatory for meaningful changes.
 
 ## Dependency Rules
 
 - Use `pnpm` for package management.
-- Prefer updating direct dependencies in `package.json` and refreshing the lockfile through normal `pnpm` resolution.
-- Do not use `pnpm.overrides` in this repository.
-- If an advisory cannot be fixed by supported direct dependency upgrades and normal lockfile resolution, leave it visible and report the upstream blocker clearly.
+- Prefer updating direct dependencies in `package.json` over forcing transitive versions with `pnpm.overrides`.
+- Only use `pnpm.overrides` as a last resort when there is no reasonable upstream or direct-dependency fix.
+- If an override is truly unavoidable, keep it narrowly scoped, document why, and remove it as soon as upstream allows.
 - When updating Payload packages, keep the Payload package family aligned on the same version.
 - When changing dependency versions, check `README.md` for documented version numbers and update every affected entry in the `Version Info` section during the same change.
 - When updating `payload`, `@payloadcms/*`, `next`, React, Node engine requirements, package manager versions, or test tooling, verify the README still matches `package.json`.
@@ -31,7 +31,7 @@ This file defines the working rules for automated agents in this repository.
 ## Testing Rules
 
 - Run relevant tests after changes.
-- For changes that affect app behavior, dependency upgrades, build tooling, auth, admin flows, seeding, comments, routing, or rendering, run the Playwright end-to-end suite.
+- For changes that affect app behavior, dependency upgrades, build tooling, auth, admin flows, routing, or rendering, run the Playwright end-to-end suite.
 - Use `corepack pnpm test:e2e` as the default verification command for those changes.
 - If the task affects the visible browser flow and manual inspection is useful, use `corepack pnpm test:e2e:headed` or `corepack pnpm test:e2e:manual`.
 - Do not claim success without stating what was actually run.
@@ -40,9 +40,8 @@ This file defines the working rules for automated agents in this repository.
 
 - Keep the Docker-based PostgreSQL flow working for e2e tests.
 - Do not break the admin onboarding flow.
-- Preserve the seeded-content workflow and the comment approval flow unless the task explicitly changes them.
-- Seed behavior for e2e must stay deterministic.
-- Production seeding must not be silently changed to test-only behavior.
+- There is no seed feature and no comments collection: both were template code and were deleted. Do not reintroduce either.
+- `scripts/seed-local.ts` is a local-only dev helper and is unrelated; it refuses to run against a non-local database.
 
 ## Audit And Security Rules
 

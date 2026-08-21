@@ -7,6 +7,14 @@ const slowMo = Number(process.env.PLAYWRIGHT_SLOW_MO ?? '0')
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: false,
+  /**
+   * One worker, because every spec shares one database and one bootstrap
+   * account. `fullyParallel: false` only serialises tests *within* a file —
+   * separate files still ran in separate workers, so two specs raced to claim
+   * `first-register` and the loser reported a confusing failure that did not
+   * reproduce when its file was run alone.
+   */
+  workers: 1,
   retries: process.env.CI ? 1 : 0,
   timeout: 180000,
   expect: {
@@ -31,7 +39,6 @@ export default defineConfig({
       PORT: String(port),
       DATABASE_URI: databaseURL,
       DISABLE_SEARCH_SYNC: 'true',
-      USE_LOCAL_SEED_MEDIA: 'true',
       PAYLOAD_SECRET: payloadSecret,
       NEXT_PUBLIC_SERVER_URL: baseURL,
     },

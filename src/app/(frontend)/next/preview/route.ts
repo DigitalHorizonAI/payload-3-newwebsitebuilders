@@ -37,7 +37,9 @@ export async function GET(req: NextRequest): Promise<Response> {
       return new Response('You are not allowed to preview this page', { status: 403 })
     }
 
-    if (!path.startsWith('/')) {
+    // Single leading slash only: '//evil.com' and '/\evil.com' are
+    // protocol-relative redirects to another origin.
+    if (!path.startsWith('/') || path.startsWith('//') || path.startsWith('/\\')) {
       return new Response('This endpoint can only be used for internal previews', { status: 500 })
     }
 
