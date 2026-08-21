@@ -83,6 +83,13 @@ const bylines = (post: Post): string[] => {
 }
 
 const toListing = (post: Post) => ({
+  // The document id, and the ONLY field on this response that is the same in
+  // every locale. Title, slug and path are all localized, so two rows for the
+  // same article share nothing else - a consumer fetching ?locale=en and
+  // ?locale=nl cannot otherwise tell that it is holding one article twice.
+  // Sorting by publishedAt happens to line the two lists up today, but that is
+  // a coincidence of the data, not a guarantee.
+  id: post.id,
   title: post.title,
   slug: post.slug,
   path: publicPath(post),
