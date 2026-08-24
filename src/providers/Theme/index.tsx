@@ -1,11 +1,11 @@
 'use client'
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useContext, useState } from 'react'
 
 import type { Theme, ThemeContextType } from './types'
 
 import canUseDOM from '@/utilities/canUseDOM'
-import { defaultTheme, getImplicitPreference, themeLocalStorageKey } from './shared'
+import { defaultTheme, themeLocalStorageKey } from './shared'
 
 const initialContext: ThemeContextType = {
   setTheme: () => null,
@@ -14,29 +14,32 @@ const initialContext: ThemeContextType = {
 
 const ThemeContext = createContext(initialContext)
 
+/**
+ * The site's own theme behaviour, mirrored: light unless the visitor chose
+ * dark, remembered under the same key the main site uses ('nwb-theme'), and
+ * never driven by the OS preference — newwebsite.builders ignores
+ * prefers-color-scheme, so the preview does too. The attribute is already set
+ * before paint by the inline InitTheme script in the frontend layout; this
+ * provider reads it back and owns changes from then on.
+ */
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setThemeState] = useState<Theme | undefined>(
     canUseDOM ? (document.documentElement.getAttribute('data-theme') as Theme) : undefined,
   )
 
   const setTheme = useCallback((themeToSet: Theme | null) => {
-    if (themeToSet === null) {
-      window.localStorage.removeItem(themeLocalStorageKey)
-      const implicitPreference = getImplicitPreference()
-      document.documentElement.setAttribute('data-theme', implicitPreference || '')
-      if (implicitPreference) setThemeState(implicitPreference)
-    } else {
-      setThemeState(themeToSet)
-      window.localStorage.setItem(themeLocalStorageKey, themeToSet)
-      document.documentElement.setAttribute('data-theme', themeToSet)
+    const next = themeToSet ?? defaultTheme
+    setThemeState(next)
+    document.documentElement.setAttribute('data-theme', next)
+    try {
+      if (themeToSet === null) {
+        window.localStorage.removeItem(themeLocalStorageKey)
+      } else {
+        window.localStorage.setItem(themeLocalStorageKey, themeToSet)
+      }
+    } catch {
+      /* storage can be unavailable (private mode); the attribute still set */
     }
-  }, [])
-
-  // newwebsite.builders is light-only, so the blog is too: neither the OS
-  // preference nor a stale stored preference may flip it.
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', defaultTheme)
-    setThemeState(defaultTheme)
   }, [])
 
   return <ThemeContext.Provider value={{ setTheme, theme }}>{children}</ThemeContext.Provider>

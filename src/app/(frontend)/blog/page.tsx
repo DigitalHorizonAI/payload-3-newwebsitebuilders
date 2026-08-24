@@ -20,6 +20,9 @@ export default async function Page() {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    // Newest first, like the public site's index. The default sort is
+    // creation order, which put the oldest article in the lead slot.
+    sort: '-publishedAt',
     overrideAccess: false,
     select: {
       title: true,
@@ -33,16 +36,17 @@ export default async function Page() {
   return (
     <div className="pb-28 pt-10 md:pt-14">
       <PageClient />
-      {/* The main site's Journal header, copy and all (its BlogPage.tsx). */}
-      <div className="container mb-12">
-        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          The Journal
+      {/* Mirrors the public site's blog hero (its .page-head). */}
+      <div className="container mb-14 pt-8 md:pt-14">
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-signal-ink">
+          The blog
         </p>
-        <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground mb-3">
-          Evidence-Based Wellness
+        <h1 className="editorial-heading max-w-[18ch] text-[clamp(2.3rem,7vw,4.25rem)] text-foreground">
+          How a website gets built, edited and found
         </h1>
-        <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Expert guides on supplements, nutrition, and daily wellness practices.
+        <p className="mt-6 max-w-2xl text-[1.0625rem] font-light leading-[1.7] text-muted-foreground">
+          Guides written for the person paying for the website, not the person writing the
+          code.
         </p>
       </div>
 

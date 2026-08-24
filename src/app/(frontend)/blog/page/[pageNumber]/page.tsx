@@ -31,6 +31,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     depth: 1,
     limit: 12,
     page: sanitizedPageNumber,
+    sort: '-publishedAt',
     overrideAccess: false,
   })
 
@@ -39,11 +40,11 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       {/* Same header as page 1, without the intro — page 2 is not a landing. */}
       <div className="container mb-12">
-        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          The Journal
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-signal-ink">
+          The blog
         </p>
-        <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground">
-          Evidence-Based Wellness
+        <h1 className="editorial-heading max-w-[18ch] text-[clamp(2rem,5vw,3.25rem)] text-foreground">
+          How a website gets built, edited and found
         </h1>
       </div>
 

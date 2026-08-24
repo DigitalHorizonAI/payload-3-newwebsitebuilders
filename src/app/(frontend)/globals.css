@@ -4,54 +4,196 @@
 
 @layer base {
   /*
-   * The newwebsite.builders palette, copied verbatim from the main site's
-   * the marketing site's stylesheet so the blog read as part of the
-   * site: warm paper ground, near-black ink, hairline borders doing the
-   * structural work, and a muted green reserved for success states.
-   * Tailwind wraps every one of these in hsl(), so they must stay as bare
-   * HSL triplets — a hex value here silently produces no colour at all.
+   * The newwebsite.builders palette, both themes, ported from the site's own
+   * token block (assets/blog/critical.css). Light on bare :root because light
+   * is the site's shipped default; dark overrides under [data-theme='dark'],
+   * which is also what tailwind.config.mjs keys darkMode on. Tailwind wraps
+   * the --background.. group in hsl(), so those must stay bare HSL triplets —
+   * a hex value there silently produces no colour at all. The site-native
+   * tokens below them are plain CSS values, used verbatim by the component
+   * layer so it can stay a line-for-line port of the site's CSS.
    */
   :root {
-    --background: 40 25% 97%; /* #F9F6F0 warm paper */
-    --foreground: 30 10% 12%; /* #211F1C ink */
+    --background: 37.5 28.6% 94.5%; /* #F5F2ED bone */
+    --foreground: 240 5% 4%; /* #0A0A0B ink */
 
-    --card: 40 20% 99%;
-    --card-foreground: 30 10% 12%;
+    --card: 0 0% 100%; /* the site's light cards are white panels */
+    --card-foreground: 240 5% 4%;
 
-    --popover: 40 20% 99%;
-    --popover-foreground: 30 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 5% 4%;
 
-    --primary: 30 10% 12%;
-    --primary-foreground: 40 25% 97%;
+    --primary: 240 5% 4%;
+    --primary-foreground: 37.5 28.6% 94.5%;
 
-    --secondary: 35 20% 93%;
-    --secondary-foreground: 30 10% 12%;
+    --secondary: 40 22% 89%; /* #EAE6DE surface-2 */
+    --secondary-foreground: 240 5% 4%;
 
-    --muted: 35 15% 92%;
-    --muted-foreground: 30 8% 46%; /* #7E7770 */
+    --muted: 40 22% 89%;
+    --muted-foreground: 240 4% 35%; /* #55555C text-2 */
 
-    /* Muted green. The main site uses it only as a success/positive accent
-       (coupons, in-stock, confirmations) — never as a brand colour. */
-    --accent: 145 20% 38%; /* #4E7A5F */
-    --accent-foreground: 40 25% 97%;
+    /* Signal orange. Fills and strokes keep #FF6A1A in both themes; SMALL
+       orange text must use --signal-ink instead (AA: 2.57:1 on bone). */
+    --accent: 21 100% 55%; /* #FF6A1A */
+    --accent-foreground: 240 5% 4%;
 
     --destructive: 0 60% 50%;
-    --destructive-foreground: 40 25% 97%;
+    --destructive-foreground: 37.5 28.6% 94.5%;
 
-    --border: 35 15% 88%; /* #E5DFD7 */
-    --input: 35 15% 88%;
-    --ring: 30 10% 12%;
+    /* The site's light hairline rgba(96,54,22,.16), flattened onto bone
+       because Tailwind's border token takes no alpha. */
+    --border: 30 21% 83%;
+    --input: 30 21% 83%;
+    --ring: 19 89% 37%; /* focus ring in signal-ink, visible on bone */
 
-    /* 4px — effectively square. The design uses borders, not rounding. */
-    --radius: 0.25rem;
+    /* The site's cards round at 16px. */
+    --radius: 1rem;
 
     --success: 196 52% 74%;
     --warning: 34 89% 85%;
     --error: 10 100% 86%;
 
     /* Fed by next/font in the frontend layout. */
-    --font-display: var(--font-cormorant), Georgia, serif;
-    --font-body: var(--font-dm-sans), sans-serif;
+    --font-display: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+    --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    --font-editorial: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
+
+    /* ---- Site-native tokens (light values), verbatim from critical.css ---- */
+    --quiet: cubic-bezier(0.22, 1, 0.36, 1);
+    --signal: #ff6a1a;
+    --signal-ink: #b4410a; /* 5.08:1 on bone; small text and icons */
+    --signal-display: #e15206; /* 3.48:1 on bone; 24px and up only */
+    --signal-soft: #ffb27a;
+    --hairline: rgba(96, 54, 22, 0.16);
+    --hairline-2: rgba(96, 54, 22, 0.26);
+    --rgb-bg: 245 242 237;
+    --rgb-signal: 255 106 26;
+
+    /* Paper gets its depth from warm tinted shadows, not tinted glows. */
+    --elev:
+      0 1px 2px rgba(62, 34, 14, 0.1), 0 8px 20px -10px rgba(96, 54, 22, 0.2),
+      0 30px 60px -28px rgba(150, 82, 34, 0.3);
+    --elev-hi:
+      0 2px 4px rgba(62, 34, 14, 0.13), 0 14px 30px -12px rgba(96, 54, 22, 0.26),
+      0 46px 88px -34px rgba(150, 82, 34, 0.38);
+    --panel-hi: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+    /* Aura + ambient drift, at the blog's reading-surface strength. */
+    --aura-opacity: 0.18;
+    --aura-1: rgba(255, 106, 26, 0.34);
+    --aura-2: rgba(214, 120, 40, 0.24);
+    --aura-3: rgba(255, 106, 26, 0.18);
+    --aura-4: rgba(160, 120, 80, 0.1);
+    --aura-vignette: rgba(126, 92, 58, 0.06);
+    --amb-opacity: 0.2;
+    --amb-hot: rgba(255, 106, 26, 0.22);
+    --amb-soft: rgba(214, 120, 40, 0.15);
+    --amb-deep: rgba(255, 106, 26, 0.13);
+    --grain-opacity: 0.018;
+    --grain-blend: multiply;
+
+    /* Floating nav pill */
+    --nav-fill: rgba(255, 255, 255, 0.7);
+    --nav-shadow:
+      0 1px 2px rgba(62, 34, 14, 0.1), 0 10px 26px -12px rgba(96, 54, 22, 0.22),
+      0 34px 66px -30px rgba(150, 82, 34, 0.3);
+    --nav-line-0: rgba(84, 48, 22, 0.08);
+    --nav-line-1: rgba(84, 48, 22, 0.42);
+    --nav-line-2: rgba(180, 65, 10, 0.46);
+    --nav-link: rgba(10, 10, 11, 0.62);
+    --nav-link-hover: rgba(10, 10, 11, 0.07);
+    --nav-on-0: rgba(255, 106, 26, 0.22);
+    --nav-on-1: rgba(255, 178, 122, 0.14);
+
+    --veil-top: rgba(245, 242, 237, 0.82);
+
+    /* Footer band */
+    --band-2: rgba(240, 235, 226, 0.92);
+    --band-edge: rgba(96, 54, 22, 0.17);
+    --band-lift:
+      0 -1px 2px rgba(62, 34, 14, 0.07), 0 -12px 26px -14px rgba(96, 54, 22, 0.21),
+      0 -34px 68px -32px rgba(150, 82, 34, 0.34);
+    --band-wash: rgba(255, 106, 26, 0.11);
+
+    --wash-warm: rgba(255, 106, 26, 0.15);
+    --sel-bg: rgba(255, 106, 26, 0.28);
+    --sel-fg: #0a0a0b;
+  }
+
+  [data-theme='dark'] {
+    --background: 240 5% 4%; /* #0A0A0B ink */
+    --foreground: 37.5 28.6% 94.5%; /* #F5F2ED bone */
+
+    --card: 240 7% 8%; /* #141417 surface */
+    --card-foreground: 37.5 28.6% 94.5%;
+
+    --popover: 240 7% 8%;
+    --popover-foreground: 37.5 28.6% 94.5%;
+
+    --primary: 37.5 28.6% 94.5%;
+    --primary-foreground: 240 5% 4%;
+
+    --secondary: 240 7% 11%; /* #1B1B1F surface-2, the card-art ground */
+    --secondary-foreground: 37.5 28.6% 94.5%;
+
+    --muted: 240 7% 11%;
+    --muted-foreground: 240 4% 56%; /* #8A8A93 text-2 */
+
+    --accent: 21 100% 55%;
+    --accent-foreground: 240 5% 4%;
+
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 37.5 28.6% 94.5%;
+
+    /* rgba(bone, .10) flattened onto the ink ground. */
+    --border: 240 4% 14%;
+    --input: 240 4% 14%;
+    --ring: 21 100% 55%;
+
+    /* ---- Site-native tokens (dark values) ---- */
+    --signal-ink: #ff6a1a; /* dark keeps full signal everywhere */
+    --signal-display: #ff6a1a;
+    --hairline: rgba(245, 242, 237, 0.1);
+    --hairline-2: rgba(245, 242, 237, 0.18);
+    --rgb-bg: 10 10 11;
+
+    --elev: 0 18px 40px -20px rgba(10, 10, 11, 0.28);
+    --elev-hi: 0 26px 60px -26px rgba(10, 10, 11, 0.36);
+    --panel-hi: inset 0 1px 0 rgba(245, 242, 237, 0.06);
+
+    --aura-opacity: 0.6;
+    --aura-1: rgba(255, 106, 26, 0.2);
+    --aura-2: rgba(255, 178, 122, 0.13);
+    --aura-3: rgba(255, 106, 26, 0.09);
+    --aura-4: rgba(245, 242, 237, 0.05);
+    --aura-vignette: rgba(0, 0, 0, 0.38);
+    --amb-opacity: 0.55;
+    --amb-hot: rgba(255, 106, 26, 0.22);
+    --amb-soft: rgba(255, 178, 122, 0.13);
+    --amb-deep: rgba(255, 106, 26, 0.1);
+    --grain-opacity: 0.06;
+    --grain-blend: soft-light;
+
+    --nav-fill: rgba(20, 20, 23, 0.62);
+    --nav-shadow: 0 10px 34px -12px rgba(0, 0, 0, 0.72);
+    --nav-line-0: rgba(245, 242, 237, 0.05);
+    --nav-line-1: rgba(245, 242, 237, 0.34);
+    --nav-line-2: rgba(255, 106, 26, 0.3);
+    --nav-link: rgba(245, 242, 237, 0.62);
+    --nav-link-hover: rgba(245, 242, 237, 0.1);
+    --nav-on-0: rgba(255, 106, 26, 0.24);
+    --nav-on-1: rgba(255, 178, 122, 0.06);
+
+    --veil-top: rgba(10, 10, 11, 0.8);
+
+    --band-2: rgba(10, 10, 11, 0.34);
+    --band-edge: rgba(245, 242, 237, 0.1);
+    --band-lift: 0 -26px 58px -34px rgba(0, 0, 0, 0.8);
+    --band-wash: rgba(255, 106, 26, 0.1);
+
+    --wash-warm: rgba(255, 106, 26, 0.14);
+    --sel-bg: rgba(255, 106, 26, 0.32);
+    --sel-fg: #ffffff;
   }
 }
 
@@ -62,20 +204,35 @@
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
+    /* The theme switch fades rather than snaps, like the site. */
+    transition:
+      background-color 400ms var(--quiet),
+      color 400ms var(--quiet);
   }
+  ::selection {
+    background: var(--sel-bg);
+    color: var(--sel-fg);
+  }
+  /* The site's heading voice: Inter Tight, light at display sizes. */
   h1,
-  h2,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
   h3,
   h4,
   h5,
   h6 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 400;
+    letter-spacing: -0.025em;
   }
 
   /*
-   * Keyboard focus only, so a mouse click doesn't leave a ring. The site's
-   * ring token is the ink colour, visible on paper and card alike.
+   * Keyboard focus only, so a mouse click doesn't leave a ring. The ring token
+   * is signal-ink per theme, visible on bone and ink alike.
    */
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
@@ -101,11 +258,302 @@
 }
 
 @layer components {
-  /* The site's headline voice: display serif, tight, calm. */
+  /* The site's headline voice: Inter Tight, light, tight, calm. */
   .editorial-heading {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  /* One word of a headline set in the site's italic serif accent. */
+  .editorial {
+    font-family: var(--font-editorial);
+    font-style: italic;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * The site's background field (assets/blog/critical.css): a slow-drifting
+   * aura, three ambient orange washes, grain, a vignette, and one soft veil
+   * under the floating pill. All driven by the theme tokens above.
+   */
+  .bg-field {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+  }
+  .aura-layer {
+    position: absolute;
+    inset: 0;
+    animation: auraDrift 42s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    will-change: transform;
+    opacity: var(--aura-opacity);
+    transition: opacity 400ms var(--quiet);
+    background:
+      radial-gradient(900px 460px at 18% 6%, var(--aura-1), transparent 62%),
+      radial-gradient(780px 430px at 84% 2%, var(--aura-2), transparent 62%),
+      radial-gradient(1100px 640px at 50% 102%, var(--aura-3), transparent 70%),
+      radial-gradient(760px 520px at 62% 46%, var(--aura-4), transparent 70%);
+  }
+  .aura-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(1400px 900px at 50% 40%, transparent 42%, var(--aura-vignette) 100%);
+  }
+  .ambient {
+    position: absolute;
+    inset: -12%;
+    will-change: transform;
+  }
+  .amb {
+    position: absolute;
+    opacity: var(--amb-opacity);
+    transition: opacity 400ms var(--quiet);
+  }
+  .amb-1 {
+    width: 52vw;
+    height: 52vw;
+    min-width: 320px;
+    min-height: 320px;
+    left: -6%;
+    top: -8%;
+    background: radial-gradient(closest-side, var(--amb-hot), transparent 72%);
+    animation: ambDrift1 74s ease-in-out infinite;
+  }
+  .amb-2 {
+    width: 44vw;
+    height: 44vw;
+    min-width: 280px;
+    min-height: 280px;
+    right: -8%;
+    top: 14%;
+    background: radial-gradient(closest-side, var(--amb-soft), transparent 72%);
+    animation: ambDrift2 96s ease-in-out infinite;
+  }
+  .amb-3 {
+    width: 66vw;
+    height: 46vw;
+    min-width: 340px;
+    min-height: 260px;
+    left: 22%;
+    bottom: -14%;
+    background: radial-gradient(closest-side, var(--amb-deep), transparent 74%);
+    animation: ambDrift3 118s ease-in-out infinite;
+  }
+  .amb-grain {
+    position: absolute;
+    inset: -8%;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grainShift 24s steps(6, end) infinite;
+    will-change: transform;
+  }
+  .top-veil {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 116px;
+    z-index: 40;
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--veil-top) 0%, rgb(var(--rgb-bg) / 0) 100%);
+  }
+
+  /*
+   * The site's floating pill nav (assets/blog/critical.css .nav-pill family),
+   * token-driven so it follows the theme: translucent blurred pill, gradient
+   * hairline ring, pill-shaped links, orange-tinted active state.
+   */
+  .nav-pill {
+    position: relative;
+    max-width: 56rem;
+    margin: 0 auto;
+    padding: 0.55rem 0.6rem 0.55rem 1rem;
+    border-radius: 999px;
+    background: var(--nav-fill);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
+    box-shadow: var(--nav-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transition:
+      background-color 400ms var(--quiet),
+      box-shadow 400ms var(--quiet);
+  }
+  .nav-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background: linear-gradient(
+      225deg,
+      var(--nav-line-0) 0%,
+      var(--nav-line-1) 42%,
+      var(--nav-line-2) 100%
+    );
+    pointer-events: none;
+  }
+  .nav-pill-link {
+    display: block;
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--nav-link);
+    text-decoration: none;
+    transition:
+      color 400ms var(--quiet),
+      background-color 400ms var(--quiet);
+  }
+  .nav-pill-link:hover,
+  .nav-pill-link:focus-visible {
+    color: hsl(var(--foreground));
+    background: var(--nav-link-hover);
+  }
+  .nav-pill-link.is-on {
+    color: hsl(var(--foreground));
+    background: linear-gradient(135deg, var(--nav-on-0) 0%, var(--nav-on-1) 100%);
+  }
+
+  /* The nav CTA: a dark capsule lit from behind on dark, a signal fill with
+     ink text on light — the site's own two variants. */
+  .nav-cta {
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 1.05rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    line-height: 1;
+    white-space: nowrap;
+    color: #f5f2ed;
+    background: linear-gradient(
+      140deg,
+      rgba(15, 15, 17, 1) 0%,
+      rgba(32, 26, 24, 1) 35%,
+      rgba(56, 40, 32, 1) 70%,
+      rgba(20, 20, 22, 1) 100%
+    );
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    transition:
+      transform 400ms var(--quiet),
+      box-shadow 400ms var(--quiet);
+  }
+  .nav-cta:hover,
+  .nav-cta:focus-visible {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+      0 0 0 4px rgba(255, 106, 26, 0.25),
+      0 16px 34px -14px rgba(255, 106, 26, 0.65);
+  }
+  :root:not([data-theme='dark']) .nav-cta {
+    background: linear-gradient(140deg, #ff8038 0%, #ff6a1a 55%, #ee5c0e 100%);
+    color: #0a0a0b;
+    box-shadow:
+      inset 0 0 0 1px rgba(10, 10, 11, 0.1),
+      var(--elev);
+  }
+  :root:not([data-theme='dark']) .nav-cta:hover,
+  :root:not([data-theme='dark']) .nav-cta:focus-visible {
+    box-shadow:
+      inset 0 0 0 1px rgba(10, 10, 11, 0.1),
+      0 0 0 4px rgba(255, 106, 26, 0.25),
+      var(--elev-hi);
+  }
+  .nav-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    width: 34px;
+    border-radius: 999px;
+    color: hsl(var(--foreground));
+    background: var(--nav-link-hover);
+    cursor: pointer;
+    flex: none;
+    transition:
+      background-color 400ms var(--quiet),
+      color 400ms var(--quiet);
+  }
+  .nav-icon-btn:hover,
+  .nav-icon-btn:focus-visible {
+    background: linear-gradient(135deg, var(--nav-on-0) 0%, var(--nav-on-1) 100%);
+  }
+  .nav-icon-btn:active {
+    transform: scale(0.9);
+  }
+  /* The toggle shows the theme you would switch TO: sun while dark, moon
+     while light — the site's own convention (critical.css .theme-toggle). */
+  .theme-toggle .i-moon {
+    display: none;
+  }
+  :root:not([data-theme='dark']) .theme-toggle .i-sun {
+    display: none;
+  }
+  :root:not([data-theme='dark']) .theme-toggle .i-moon {
+    display: block;
+  }
+  .brand-text {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    font-size: 15px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /*
+   * The site's card cover art: a warm radial wash over the surface gradient,
+   * and four stroke/fill classes the inline SVGs are drawn with. Strokes and
+   * fills keep full signal in both themes, exactly like the site.
+   */
+  .cover-ground {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 100% at 12% 0%, var(--wash-warm), transparent 62%),
+      linear-gradient(140deg, hsl(var(--secondary)), hsl(var(--card)));
+  }
+  .cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cover .c-line {
+    fill: none;
+    stroke: var(--signal);
+    stroke-width: 1.25;
+    opacity: 0.55;
+  }
+  .cover .c-line-2 {
+    fill: none;
+    stroke: hsl(var(--foreground));
+    stroke-width: 1;
+    opacity: 0.16;
+  }
+  .cover .c-fill {
+    fill: var(--signal);
+    opacity: 0.16;
+  }
+  .cover .c-fill-2 {
+    fill: hsl(var(--foreground));
+    opacity: 0.07;
   }
 
   /* Uppercase micro-type used for nav links, labels, chips and buttons. */
@@ -116,10 +564,252 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
   }
+  /* The site's label voice: Inter Tight tracked caps (used in the footer). */
+  .label {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 1.4;
+  }
 
-  /* Article prose — the main site's .cms-article-content rules, verbatim. */
+  /* Small orange text that must hold AA in both themes (site: --signal-ink). */
+  .text-signal-ink {
+    color: var(--signal-ink);
+  }
+
+  /*
+   * The site's footer: one tinted band with rounded top corners that pulls up
+   * over the content before it (assets/blog/blog.css .foot family).
+   */
+  .foot {
+    position: relative;
+    background: var(--band-2);
+    border-top: 1px solid var(--band-edge);
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    margin-top: -2rem;
+    box-shadow: var(--band-lift);
+    overflow: hidden;
+    color: hsl(var(--foreground));
+    transition:
+      background-color 400ms var(--quiet),
+      box-shadow 400ms var(--quiet);
+  }
+  :root:not([data-theme='dark']) .foot {
+    box-shadow: var(--band-lift), var(--panel-hi);
+  }
+  @media (min-width: 1024px) {
+    .foot {
+      border-top-left-radius: 3rem;
+      border-top-right-radius: 3rem;
+      margin-top: -2.5rem;
+    }
+  }
+  .foot-wash {
+    position: absolute;
+    inset: auto 0 auto 0;
+    top: 0;
+    height: 420px;
+    pointer-events: none;
+    background: radial-gradient(900px 320px at 12% 0%, var(--band-wash), transparent 68%);
+  }
+  .foot-inner {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 0 3.5rem;
+  }
+  @media (min-width: 640px) {
+    .foot-inner {
+      padding: 6rem 0 4rem;
+    }
+  }
+  .foot a {
+    color: hsl(var(--foreground));
+    text-decoration: none;
+  }
+  .foot-muted {
+    color: hsl(var(--muted-foreground));
+  }
+  .foot-rule {
+    height: 1px;
+    background: var(--hairline-2);
+    margin: 2.5rem 0;
+  }
+  @media (min-width: 640px) {
+    .foot-rule {
+      margin: 3rem 0;
+    }
+  }
+  .foot-ask {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+  @media (min-width: 1024px) {
+    .foot-ask {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+  }
+  .foot-ask h2 {
+    font-size: clamp(2.6rem, 6vw, 4rem);
+    line-height: 0.95;
+  }
+  .foot-ask h2 .editorial {
+    color: var(--signal-display);
+  }
+  .foot-ask p {
+    margin: 1.4rem 0 0;
+    max-width: 30rem;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: hsl(var(--muted-foreground));
+  }
+  .foot-ask-cta {
+    display: flex;
+  }
+  @media (min-width: 1024px) {
+    .foot-ask-cta {
+      justify-content: flex-end;
+    }
+  }
+  .foot-ask-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .foot-ask-link .label {
+    font-size: 11px;
+  }
+  .foot-arrow {
+    height: 3.5rem;
+    width: 3.5rem;
+    flex: none;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--hairline-2);
+    transition:
+      background-color 500ms var(--quiet),
+      color 500ms var(--quiet),
+      border-color 500ms var(--quiet);
+  }
+  .foot-arrow svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .foot a:hover .foot-arrow,
+  .foot a:focus-visible .foot-arrow {
+    background: var(--signal);
+    border-color: var(--signal);
+    color: #0a0a0b;
+  }
+  /* A link that grows its own underline. */
+  .grow-link {
+    position: relative;
+    display: inline-block;
+  }
+  .grow-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 400ms var(--quiet);
+  }
+  .grow-link:hover::after,
+  .grow-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .foot-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.25rem;
+  }
+  @media (min-width: 768px) {
+    .foot-cols {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .foot-cols {
+      grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr));
+      gap: 2.5rem;
+    }
+  }
+  .foot-cols h2 {
+    font-size: 10px;
+    color: hsl(var(--muted-foreground));
+  }
+  .foot-list {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+  .foot-brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  .foot-brandline {
+    margin: 1.25rem 0 0;
+    max-width: 22rem;
+    font-size: 0.875rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: hsl(var(--muted-foreground));
+  }
+  .foot-email {
+    margin: 1rem 0 0;
+    font-size: 0.875rem;
+  }
+  .foot-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  @media (min-width: 768px) {
+    .foot-bottom {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+  .foot-bottom p {
+    font-size: 12px;
+    font-weight: 300;
+    color: hsl(var(--muted-foreground));
+  }
+  .foot-legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  /* Article prose — structure from the main site's article pages. Body reads
+     in near-full foreground; the pure token is reserved for headings and
+     emphasis. */
   .article-prose {
-    @apply text-muted-foreground leading-relaxed;
+    @apply text-foreground/80 leading-relaxed font-light;
   }
   .article-prose h2 {
     font-family: var(--font-display);
@@ -205,6 +895,80 @@
   }
 }
 
+@keyframes auraDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-2.5%, 1.5%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes ambDrift1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  30% {
+    transform: translate3d(7%, 5%, 0) scale(1.14);
+  }
+  62% {
+    transform: translate3d(-5%, 9%, 0) scale(0.94);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes ambDrift2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  38% {
+    transform: translate3d(-8%, 7%, 0) scale(0.92);
+  }
+  71% {
+    transform: translate3d(4%, -6%, 0) scale(1.16);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes ambDrift3 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  44% {
+    transform: translate3d(6%, -6%, 0) scale(1.1);
+  }
+  78% {
+    transform: translate3d(-7%, 3%, 0) scale(0.96);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+@keyframes grainShift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-1.6%, 1.1%, 0);
+  }
+  40% {
+    transform: translate3d(1.2%, -1.7%, 0);
+  }
+  60% {
+    transform: translate3d(1.9%, 1.4%, 0);
+  }
+  80% {
+    transform: translate3d(-1.1%, -1.2%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -213,6 +977,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.15s !important;
     scroll-behavior: auto !important;
+  }
+
+  .ambient,
+  .amb,
+  .amb-grain,
+  .aura-layer {
+    animation: none !important;
+    transform: none !important;
   }
 
   .fade-in {

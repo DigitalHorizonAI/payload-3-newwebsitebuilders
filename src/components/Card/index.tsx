@@ -8,14 +8,17 @@ import React, { Fragment } from 'react'
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { TopicArt } from '@/components/TopicArt'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'publishedAt'>
 
 /**
- * The main site's article card, ported from its BlogPage.tsx: no container,
- * border or shadow — a bare column of 4:3 image, category label, serif title
- * and excerpt. The main site's meta row shows read time; the posts collection
- * has no such field, so the blog shows the publish date there instead.
+ * The main site's article card, ported from its blog index (.post-card):
+ * a rounded hairline-inset panel — cover art on top, then topic tag, title,
+ * excerpt, and a meta row pushed to the bottom. The art is the site's inline
+ * SVG topic drawing; a post with a real meta image shows that instead. The
+ * main site's meta row shows read time; the posts collection has no such
+ * field, so the blog shows the publish date there instead.
  */
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -36,70 +39,83 @@ export const Card: React.FC<{
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = getDocPath(relationTo, slug)
 
+  // Categories have no slug field; their titles are the topic keys themselves
+  // ('seo', 'build', 'cms', 'process') — the articles API publishes them as-is.
+  const firstCategory = hasCategories && typeof categories[0] === 'object' ? categories[0] : null
+  const topic = firstCategory ? firstCategory.title : null
+
   return (
     <article
-      className={cn('group flex flex-col hover:cursor-pointer', className)}
+      className={cn(
+        'group flex h-full flex-col overflow-hidden rounded-2xl bg-card',
+        'shadow-[inset_0_0_0_1px_hsl(var(--foreground)/0.10)]',
+        'transition-[background-color,transform,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+        'hover:-translate-y-[3px] hover:cursor-pointer hover:bg-secondary',
+        className,
+      )}
       ref={card.ref}
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-secondary mb-4">
-        {metaImage && typeof metaImage !== 'string' && (
+      <div className="relative h-[132px] overflow-hidden">
+        {metaImage && typeof metaImage !== 'string' ? (
           <Media
             fill
             imgClassName="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             resource={metaImage}
             size="33vw"
           />
+        ) : (
+          <TopicArt topic={topic} />
         )}
       </div>
 
-      {showCategories && hasCategories && (
-        <p className="text-xs tracking-[0.12em] uppercase text-muted-foreground mb-2">
-          {categories?.map((category, index) => {
-            if (typeof category === 'object') {
-              const { title: titleFromCategory } = category
-              const categoryTitle = titleFromCategory || 'Untitled category'
-              const isLast = index === categories.length - 1
+      <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
+        {showCategories && hasCategories && (
+          <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-signal-ink">
+            {categories?.map((category, index) => {
+              if (typeof category === 'object') {
+                const { title: titleFromCategory } = category
+                const categoryTitle = titleFromCategory || 'Untitled category'
+                const isLast = index === categories.length - 1
 
-              return (
-                <Fragment key={index}>
-                  {categoryTitle}
-                  {!isLast && <Fragment>, &nbsp;</Fragment>}
-                </Fragment>
-              )
-            }
+                return (
+                  <Fragment key={index}>
+                    {categoryTitle}
+                    {!isLast && <Fragment>, &nbsp;</Fragment>}
+                  </Fragment>
+                )
+              }
 
-            return null
-          })}
-        </p>
-      )}
-
-      {titleToUse && (
-        <h3 className="font-display text-xl text-foreground leading-snug mb-2">
-          <Link
-            className="group-hover:underline underline-offset-4"
-            href={href}
-            ref={link.ref}
-          >
-            {titleToUse}
-          </Link>
-        </h3>
-      )}
-
-      {description && (
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{sanitizedDescription}</p>
-      )}
-
-      {publishedAt && (
-        <p className="mt-auto text-xs text-muted-foreground">
-          <time dateTime={publishedAt}>
-            {new Date(publishedAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
+              return null
             })}
-          </time>
-        </p>
-      )}
+          </p>
+        )}
+
+        {titleToUse && (
+          <h3 className="mt-3 font-display text-[1.2rem] leading-tight text-foreground">
+            <Link className="group-hover:underline underline-offset-4" href={href} ref={link.ref}>
+              {titleToUse}
+            </Link>
+          </h3>
+        )}
+
+        {description && (
+          <p className="mt-2 text-[0.9375rem] font-light leading-relaxed text-muted-foreground line-clamp-2">
+            {sanitizedDescription}
+          </p>
+        )}
+
+        {publishedAt && (
+          <p className="mt-auto flex items-center gap-2 pt-5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            <time dateTime={publishedAt}>
+              {new Date(publishedAt).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+          </p>
+        )}
+      </div>
     </article>
   )
 }

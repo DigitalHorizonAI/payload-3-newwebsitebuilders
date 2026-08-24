@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from 'src/utilities/cn'
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import { Instrument_Serif, Inter, Inter_Tight } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -15,19 +15,28 @@ import { draftMode } from 'next/headers'
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
-// The same two families newwebsite.builders loads, so the blog reads as one
-// site: Cormorant Garamond for headings, DM Sans for everything else.
-const cormorant = Cormorant_Garamond({
+// The same three families newwebsite.builders loads, so the blog reads as one
+// site: Inter for body, Inter Tight for headings and labels, and Instrument
+// Serif only as the italic accent word inside a headline.
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-cormorant',
+  weight: ['300', '400', '500'],
+  variable: '--font-inter',
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
+const interTight = Inter_Tight({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-dm-sans',
+  weight: ['300', '400', '500'],
+  variable: '--font-inter-tight',
+  display: 'swap',
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['italic'],
+  variable: '--font-instrument-serif',
   display: 'swap',
 })
 
@@ -35,9 +44,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(cormorant.variable, dmSans.variable)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(inter.variable, interTight.variable, instrumentSerif.variable)}
+      data-theme="light"
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
+        {/* Theme resolution before any paint, mirroring the site's own script
+            (?theme= override, then the shared 'nwb-theme' key, then light).
+            Without this the attribute would only arrive after hydration and
+            a dark-mode visitor would see the page flash light. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=(q==='light'||q==='dark')?q:(localStorage.getItem('nwb-theme')||'light');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
+          }}
+        />
         {/* The reveal animation starts from opacity 0, so without JavaScript
             there would be nothing to un-hide it. Cheaper and more reliable
             than a blocking script, and it degrades to "just show everything". */}
@@ -47,6 +70,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="flex min-h-screen flex-col">
         <Providers>
+          {/* The site's background field: aura, ambient drift, grain, and the
+              soft veil under the floating pill. Pure decoration. */}
+          <div aria-hidden="true" className="bg-field">
+            <div className="aura-layer" />
+            <div className="ambient">
+              <div className="amb amb-1" />
+              <div className="amb amb-2" />
+              <div className="amb amb-3" />
+            </div>
+            <div className="amb-grain" />
+            <div className="aura-vignette" />
+          </div>
+          <div aria-hidden="true" className="top-veil" />
+
           <AdminBar
             adminBarProps={{
               preview: isEnabled,

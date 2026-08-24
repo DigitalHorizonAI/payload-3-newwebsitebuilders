@@ -7,13 +7,13 @@ export type Props = {
   posts: CardPostData[]
 }
 
-/** The main site's article grid: three columns of bare cards, wide gutters. */
+/** The main site's article grid (.post-grid): three columns, 1.25rem gaps. */
 export const CollectionArchive: React.FC<Props> = (props) => {
   const { posts } = props
 
   return (
     <div className="container">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {posts?.map((result, index) => {
           if (typeof result === 'object' && result !== null) {
             return (
