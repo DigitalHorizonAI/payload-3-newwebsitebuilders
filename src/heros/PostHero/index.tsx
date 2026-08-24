@@ -21,7 +21,7 @@ export const PostHero: React.FC<{
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
             {categories && categories.length > 0 && (
-              <p className="text-xs tracking-[0.12em] uppercase text-muted-foreground mb-3">
+              <p className="text-[10px] font-medium tracking-[0.16em] uppercase text-accent mb-4">
                 {categories.map((category, index) => {
                   if (typeof category === 'object' && category !== null) {
                     const titleToUse = category.title || 'Untitled category'
@@ -39,7 +39,7 @@ export const PostHero: React.FC<{
               </p>
             )}
 
-            <h1 className="editorial-heading text-3xl md:text-4xl text-foreground mb-5 leading-tight">
+            <h1 className="editorial-heading text-[clamp(2rem,5vw,3rem)] text-foreground mb-5">
               {title}
             </h1>
 
@@ -73,10 +73,10 @@ export const PostHero: React.FC<{
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
                   <time dateTime={publishedAt}>
-                    {new Date(publishedAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
+                    {new Date(publishedAt).toLocaleDateString('en-GB', {
                       day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
                     })}
                   </time>
                 </span>

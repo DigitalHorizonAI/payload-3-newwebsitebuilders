@@ -20,6 +20,9 @@ export default async function Page() {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    // Newest first, like the public site's index. The default sort is
+    // creation order, which put the oldest article in the lead slot.
+    sort: '-publishedAt',
     overrideAccess: false,
     select: {
       title: true,
@@ -33,15 +36,15 @@ export default async function Page() {
   return (
     <div className="pb-28 pt-10 md:pt-14">
       <PageClient />
-      {/* Mirrors the public site's blog hero (its /blog index). */}
-      <div className="container mb-12">
-        <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
+      {/* Mirrors the public site's blog hero (its .page-head). */}
+      <div className="container mb-14 pt-8 md:pt-14">
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-accent">
           The blog
         </p>
-        <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground mb-3">
+        <h1 className="editorial-heading max-w-[18ch] text-[clamp(2.3rem,7vw,4.25rem)] text-foreground">
           How a website gets built, edited and found
         </h1>
-        <p className="text-muted-foreground max-w-2xl leading-relaxed">
+        <p className="mt-6 max-w-2xl text-[1.0625rem] font-light leading-[1.7] text-muted-foreground">
           Guides written for the person paying for the website, not the person writing the
           code.
         </p>

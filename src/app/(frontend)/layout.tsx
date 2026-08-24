@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from 'src/utilities/cn'
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import { Instrument_Serif, Inter, Inter_Tight } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -15,19 +15,28 @@ import { draftMode } from 'next/headers'
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 
-// The same two families newwebsite.builders loads, so the blog reads as one
-// site: Cormorant Garamond for headings, DM Sans for everything else.
-const cormorant = Cormorant_Garamond({
+// The same three families newwebsite.builders loads, so the blog reads as one
+// site: Inter for body, Inter Tight for headings and labels, and Instrument
+// Serif only as the italic accent word inside a headline.
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-cormorant',
+  weight: ['300', '400', '500'],
+  variable: '--font-inter',
   display: 'swap',
 })
 
-const dmSans = DM_Sans({
+const interTight = Inter_Tight({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-dm-sans',
+  weight: ['300', '400', '500'],
+  variable: '--font-inter-tight',
+  display: 'swap',
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['italic'],
+  variable: '--font-instrument-serif',
   display: 'swap',
 })
 
@@ -35,7 +44,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(cormorant.variable, dmSans.variable)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(inter.variable, interTight.variable, instrumentSerif.variable)}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         {/* The reveal animation starts from opacity 0, so without JavaScript

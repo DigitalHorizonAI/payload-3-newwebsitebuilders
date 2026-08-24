@@ -4,54 +4,56 @@
 
 @layer base {
   /*
-   * The newwebsite.builders palette, copied verbatim from the main site's
-   * the marketing site's stylesheet so the blog read as part of the
-   * site: warm paper ground, near-black ink, hairline borders doing the
-   * structural work, and a muted green reserved for success states.
+   * The newwebsite.builders palette — the site's own dark theme, its default
+   * (assets/blog/critical.css, bare :root there too): near-black ink ground,
+   * bone text, hairlines in translucent bone, and one orange signal colour.
    * Tailwind wraps every one of these in hsl(), so they must stay as bare
    * HSL triplets — a hex value here silently produces no colour at all.
    */
   :root {
-    --background: 40 25% 97%; /* #F9F6F0 warm paper */
-    --foreground: 30 10% 12%; /* #211F1C ink */
+    --background: 240 5% 4%; /* #0A0A0B ink */
+    --foreground: 38 29% 95%; /* #F5F2ED bone */
 
-    --card: 40 20% 99%;
-    --card-foreground: 30 10% 12%;
+    --card: 240 7% 8%; /* #141417 surface */
+    --card-foreground: 38 29% 95%;
 
-    --popover: 40 20% 99%;
-    --popover-foreground: 30 10% 12%;
+    --popover: 240 7% 8%;
+    --popover-foreground: 38 29% 95%;
 
-    --primary: 30 10% 12%;
-    --primary-foreground: 40 25% 97%;
+    --primary: 38 29% 95%;
+    --primary-foreground: 240 5% 4%;
 
-    --secondary: 35 20% 93%;
-    --secondary-foreground: 30 10% 12%;
+    --secondary: 240 7% 11%; /* #1B1B1F surface-2, the card-art ground */
+    --secondary-foreground: 38 29% 95%;
 
-    --muted: 35 15% 92%;
-    --muted-foreground: 30 8% 46%; /* #7E7770 */
+    --muted: 240 7% 11%;
+    --muted-foreground: 240 4% 56%; /* #8A8A93 text-2 */
 
-    /* Muted green. The main site uses it only as a success/positive accent
-       (coupons, in-stock, confirmations) — never as a brand colour. */
-    --accent: 145 20% 38%; /* #4E7A5F */
-    --accent-foreground: 40 25% 97%;
+    /* The site's one accent: signal orange, small text and icons included
+       (dark theme keeps full #FF6A1A everywhere). */
+    --accent: 21 100% 55%; /* #FF6A1A */
+    --accent-foreground: 240 5% 4%;
 
     --destructive: 0 60% 50%;
-    --destructive-foreground: 40 25% 97%;
+    --destructive-foreground: 38 29% 95%;
 
-    --border: 35 15% 88%; /* #E5DFD7 */
-    --input: 35 15% 88%;
-    --ring: 30 10% 12%;
+    /* The site's hairline is rgba(bone, .10); flattened onto the ink ground
+       because Tailwind's border token takes no alpha. */
+    --border: 240 4% 14%;
+    --input: 240 4% 14%;
+    --ring: 21 100% 55%;
 
-    /* 4px — effectively square. The design uses borders, not rounding. */
-    --radius: 0.25rem;
+    /* The site's cards round at 16px. */
+    --radius: 1rem;
 
     --success: 196 52% 74%;
     --warning: 34 89% 85%;
     --error: 10 100% 86%;
 
     /* Fed by next/font in the frontend layout. */
-    --font-display: var(--font-cormorant), Georgia, serif;
-    --font-body: var(--font-dm-sans), sans-serif;
+    --font-display: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+    --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    --font-editorial: var(--font-instrument-serif), Georgia, 'Times New Roman', serif;
   }
 }
 
@@ -63,14 +65,21 @@
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
   }
+  /* The site's heading voice: Inter Tight, light at display sizes. */
   h1,
-  h2,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
   h3,
   h4,
   h5,
   h6 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 400;
+    letter-spacing: -0.025em;
   }
 
   /*
@@ -101,11 +110,58 @@
 }
 
 @layer components {
-  /* The site's headline voice: display serif, tight, calm. */
+  /* The site's headline voice: Inter Tight, light, tight, calm. */
   .editorial-heading {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  /* One word of a headline set in the site's italic serif accent. */
+  .editorial {
+    font-family: var(--font-editorial);
+    font-style: italic;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * The site's card cover art (assets/blog/critical.css): a warm radial wash
+   * over the surface gradient, and four stroke/fill classes the inline SVGs
+   * are drawn with, all keyed to the theme tokens.
+   */
+  .cover-ground {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 100% at 12% 0%, hsl(21 100% 55% / 0.08), transparent 62%),
+      linear-gradient(140deg, hsl(var(--secondary)), hsl(var(--card)));
+  }
+  .cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cover .c-line {
+    fill: none;
+    stroke: hsl(var(--accent));
+    stroke-width: 1.25;
+    opacity: 0.55;
+  }
+  .cover .c-line-2 {
+    fill: none;
+    stroke: hsl(var(--foreground));
+    stroke-width: 1;
+    opacity: 0.16;
+  }
+  .cover .c-fill {
+    fill: hsl(var(--accent));
+    opacity: 0.16;
+  }
+  .cover .c-fill-2 {
+    fill: hsl(var(--foreground));
+    opacity: 0.07;
   }
 
   /* Uppercase micro-type used for nav links, labels, chips and buttons. */
@@ -117,9 +173,10 @@
     text-transform: uppercase;
   }
 
-  /* Article prose — the main site's .cms-article-content rules, verbatim. */
+  /* Article prose — structure from the main site's article pages. Body reads
+     in near-full bone; the pure token is reserved for headings and emphasis. */
   .article-prose {
-    @apply text-muted-foreground leading-relaxed;
+    @apply text-foreground/80 leading-relaxed font-light;
   }
   .article-prose h2 {
     font-family: var(--font-display);
