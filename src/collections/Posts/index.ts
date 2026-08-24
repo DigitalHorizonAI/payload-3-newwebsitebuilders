@@ -23,6 +23,7 @@ import { generatePreviewPath } from '../../utilities/generatePreviewPath'
 import { ingestMarkdownContent } from './hooks/ingestMarkdownContent'
 import { populateAuthors } from './hooks/populateAuthors'
 import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
+import { triggerNetlifyBuild, triggerNetlifyBuildOnDelete } from './hooks/triggerNetlifyBuild'
 
 import {
   MetaDescriptionField,
@@ -303,8 +304,8 @@ export const Posts: CollectionConfig<'posts'> = {
     ...slugField('title', { slugOverrides: { localized: true } }),
   ],
   hooks: {
-    afterChange: [revalidatePost],
-    afterDelete: [revalidateDelete],
+    afterChange: [revalidatePost, triggerNetlifyBuild],
+    afterDelete: [revalidateDelete, triggerNetlifyBuildOnDelete],
     afterRead: [populateAuthors],
   },
   versions: {
