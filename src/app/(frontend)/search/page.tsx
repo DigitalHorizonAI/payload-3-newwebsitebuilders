@@ -66,7 +66,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
       <PageClient />
       <div className="container mb-12">
         <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          The Journal
+          The blog
         </p>
         <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground mb-6">Search</h1>
         <Search />

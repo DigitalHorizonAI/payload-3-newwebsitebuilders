@@ -81,7 +81,7 @@ export const homeStatic: Page = {
     },
   },
   meta: {
-    description: 'NewWebsite.builders — evidence-based supplement guides and healthy living.',
+    description: 'NewWebsite.builders — custom-coded business websites with a headless CMS.',
     title: 'NewWebsite.builders',
   },
   title: 'Home',

@@ -40,10 +40,10 @@ export default async function Page({ params: paramsPromise }: Args) {
       {/* Same header as page 1, without the intro — page 2 is not a landing. */}
       <div className="container mb-12">
         <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          The Journal
+          The blog
         </p>
         <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground">
-          Evidence-Based Wellness
+          How a website gets built, edited and found
         </h1>
       </div>
 

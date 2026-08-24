@@ -33,16 +33,17 @@ export default async function Page() {
   return (
     <div className="pb-28 pt-10 md:pt-14">
       <PageClient />
-      {/* The main site's Journal header, copy and all (its BlogPage.tsx). */}
+      {/* Mirrors the public site's blog hero (its /blog index). */}
       <div className="container mb-12">
         <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-3">
-          The Journal
+          The blog
         </p>
         <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground mb-3">
-          Evidence-Based Wellness
+          How a website gets built, edited and found
         </h1>
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Expert guides on supplements, nutrition, and daily wellness practices.
+          Guides written for the person paying for the website, not the person writing the
+          code.
         </p>
       </div>
 
