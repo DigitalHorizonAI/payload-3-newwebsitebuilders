@@ -60,38 +60,42 @@ export const MOBILE_LINKS: NavLink[] = [
 ]
 
 /**
- * Footer columns, mirroring the main site's footer.
+ * The footer, mirroring the main site's footer verbatim (its blog pages'
+ * <footer class="foot">): the ask block, two link columns under the brand
+ * column, and the legal row.
  */
-export const FOOTER_BLURB =
-  'Custom-coded business websites with a headless CMS, edge hosting and structured data from the first commit. The code is yours.'
+export const FOOT_ASK = {
+  heading: 'Ready when you are',
+  body: 'Thirty minutes settles the pages, the words and the look. You leave with a written scope and a fixed price, before a single component is written.',
+  cta: { label: 'Schedule a call', href: LINKS.contact.href },
+}
 
-/** What the site sells, in place of the ported site's product catalogue. */
-export const FOOTER_SHOP: NavLink[] = [
-  { label: 'Landing page', href: `${SITE}/services/landing-page/` },
-  { label: 'Multi-page website', href: `${SITE}/services/multi-page-website/` },
-  { label: 'Custom build', href: `${SITE}/services/custom-build/` },
-]
-
-export const FOOTER_COMPANY: NavLink[] = [
-  { label: 'Blog', href: '/blog' },
+export const FOOTER_SITE_HEADING = 'The site'
+export const FOOTER_SITE: NavLink[] = [
+  LINKS.howWeWork,
+  { label: 'The CMS', href: LINKS.headlessCms.href },
+  LINKS.seoAndGeo,
+  LINKS.theStack,
+  LINKS.work,
   LINKS.about,
   LINKS.faq,
   LINKS.contact,
-  LINKS.theStack,
-  LINKS.seoAndGeo,
-  LINKS.headlessCms,
-  { label: 'Privacy', href: `${SITE}/privacy/` },
-  { label: 'Terms', href: `${SITE}/terms/` },
+  LINKS.blog,
 ]
 
-export const FOOTER_EMAIL = 'hello@newwebsite.builders'
+export const FOOTER_OFFER_HEADING = 'The offer'
+export const FOOTER_OFFER: NavLink[] = [
+  LINKS.pricing,
+  { label: 'Landing page', href: `${SITE}/services/landing-page/` },
+  { label: 'Multi-page site', href: `${SITE}/services/multi-page-website/` },
+  { label: 'Custom build', href: `${SITE}/services/custom-build/` },
+]
 
-/**
- * Only the legal line the site itself publishes. The ported original carried
- * the previous client's registered address and tax number; a postal address for
- * this company has not been published anywhere we can read, so none is invented
- * here.
- */
-export const BUSINESS_DETAILS = [
-  'NewWebsite.builders is a product of Digital Horizon Marketing Management FZCO',
+export const FOOTER_BRANDLINE = 'A product of Digital Horizon Marketing Management FZCO.'
+export const FOOTER_EMAIL = 'hello@newwebsite.builders'
+export const FOOTER_NOTE = 'Thirty minutes settles the pages, the words and the look.'
+export const FOOTER_LEGAL = 'Digital Horizon Marketing Management FZCO'
+export const FOOTER_LEGAL_LINKS: NavLink[] = [
+  { label: 'Privacy', href: `${SITE}/privacy/` },
+  { label: 'Terms', href: `${SITE}/terms/` },
 ]

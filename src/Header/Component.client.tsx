@@ -1,23 +1,46 @@
 'use client'
 
-import { Menu, Search, X } from 'lucide-react'
+import { Menu, Moon, Search, Sun, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 import { MOBILE_LINKS, NAV, NAV_CTA, type NavLink } from '@/site'
+import { useTheme } from '@/providers/Theme'
 
 /**
  * The main site's floating pill nav, ported from its blog pages' header
  * (.nav-shell / .nav-pill): brand mark and mixed-case wordmark on the left,
- * pill links in the middle, CTA on the right. Two deliberate differences for
- * the CMS host: a search icon where the site has its language switch and
- * theme toggle (this preview is one language, one theme), and the shell is
- * sticky rather than fixed so it never overlaps the admin bar.
+ * pill links in the middle, theme toggle and CTA on the right. Two deliberate
+ * differences for the CMS host: a search icon where the site has its language
+ * switch (this preview is one language), and the shell is sticky rather than
+ * fixed so it never overlaps the admin bar.
  *
  * Blog-internal destinations stay client-side <Link>s; the main-site ones
  * are another origin and have to be full loads.
  */
+
+/**
+ * The site's sun/moon toggle (data-theme-toggle in its build.py nav). Which
+ * icon shows is decided by CSS off the html data-theme attribute, exactly
+ * like the site, so the button needs no state of its own beyond the click.
+ */
+const ThemeToggle: React.FC = () => {
+  const { setTheme, theme } = useTheme()
+  const isLight = theme !== 'dark'
+
+  return (
+    <button
+      onClick={() => setTheme(isLight ? 'dark' : 'light')}
+      className="nav-icon-btn theme-toggle"
+      aria-pressed={isLight}
+      aria-label={isLight ? 'Switch to the dark theme' : 'Switch to the light theme'}
+    >
+      <Sun className="i-sun h-4 w-4" strokeWidth={1.7} />
+      <Moon className="i-moon h-4 w-4" strokeWidth={1.7} />
+    </button>
+  )
+}
 
 const NavAnchor: React.FC<{
   link: NavLink
@@ -82,6 +105,7 @@ export const HeaderClient: React.FC = () => {
           <Link href="/search" className="nav-icon-btn" aria-label="Search articles">
             <Search className="h-4 w-4" strokeWidth={1.7} />
           </Link>
+          <ThemeToggle />
           <a href={NAV_CTA.href} className="nav-cta max-sm:hidden">
             {NAV_CTA.label}
           </a>

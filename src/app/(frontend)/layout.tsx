@@ -46,11 +46,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       className={cn(inter.variable, interTight.variable, instrumentSerif.variable)}
+      data-theme="light"
       lang="en"
       suppressHydrationWarning
     >
       <head>
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
+        {/* Theme resolution before any paint, mirroring the site's own script
+            (?theme= override, then the shared 'nwb-theme' key, then light).
+            Without this the attribute would only arrive after hydration and
+            a dark-mode visitor would see the page flash light. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=(q==='light'||q==='dark')?q:(localStorage.getItem('nwb-theme')||'light');document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
+          }}
+        />
         {/* The reveal animation starts from opacity 0, so without JavaScript
             there would be nothing to un-hide it. Cheaper and more reliable
             than a blocking script, and it degrades to "just show everything". */}
@@ -60,6 +70,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="flex min-h-screen flex-col">
         <Providers>
+          {/* The site's background field: aura, ambient drift, grain, and the
+              soft veil under the floating pill. Pure decoration. */}
+          <div aria-hidden="true" className="bg-field">
+            <div className="aura-layer" />
+            <div className="ambient">
+              <div className="amb amb-1" />
+              <div className="amb amb-2" />
+              <div className="amb amb-3" />
+            </div>
+            <div className="amb-grain" />
+            <div className="aura-vignette" />
+          </div>
+          <div aria-hidden="true" className="top-veil" />
+
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
