@@ -40,7 +40,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       <PageClient />
       {/* Same header as page 1, without the intro — page 2 is not a landing. */}
       <div className="container mb-12">
-        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-accent">
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-signal-ink">
           The blog
         </p>
         <h1 className="editorial-heading max-w-[18ch] text-[clamp(2rem,5vw,3.25rem)] text-foreground">

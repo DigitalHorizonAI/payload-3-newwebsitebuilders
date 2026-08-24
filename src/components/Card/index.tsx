@@ -70,7 +70,7 @@ export const Card: React.FC<{
 
       <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
         {showCategories && hasCategories && (
-          <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-accent">
+          <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-signal-ink">
             {categories?.map((category, index) => {
               if (typeof category === 'object') {
                 const { title: titleFromCategory } = category

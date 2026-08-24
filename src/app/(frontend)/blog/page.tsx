@@ -38,7 +38,7 @@ export default async function Page() {
       <PageClient />
       {/* Mirrors the public site's blog hero (its .page-head). */}
       <div className="container mb-14 pt-8 md:pt-14">
-        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-accent">
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-signal-ink">
           The blog
         </p>
         <h1 className="editorial-heading max-w-[18ch] text-[clamp(2.3rem,7vw,4.25rem)] text-foreground">
