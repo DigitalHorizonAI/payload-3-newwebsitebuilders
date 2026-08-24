@@ -43,26 +43,20 @@ export const LINKS = {
 } satisfies Record<string, NavLink>
 
 /**
- * The bar above the header. newwebsite.builders runs no promotional banner, so
- * this states what the site sells — the one claim its own home page leads with.
+ * The pill nav, in the exact order the site's own blog pages render it
+ * (blog/index.html .nav-links), plus the CTA on the right.
  */
-export const ANNOUNCEMENT = {
-  text: 'New generation websites, live in three business days —',
-  linkLabel: 'See the pricing',
-  href: `${SITE}/pricing/`,
-}
+export const NAV: NavLink[] = [LINKS.howWeWork, LINKS.work, LINKS.pricing, LINKS.blog, LINKS.faq]
 
-/** The 3-column header: links left and right of the centered wordmark. */
-export const NAV_LEFT: NavLink[] = [LINKS.howWeWork, LINKS.work]
-export const NAV_RIGHT: NavLink[] = [LINKS.blog, LINKS.pricing, LINKS.about]
+export const NAV_CTA: NavLink = { label: 'Schedule a call', href: LINKS.contact.href }
 
 export const MOBILE_LINKS: NavLink[] = [
   LINKS.howWeWork,
   LINKS.work,
-  LINKS.blog,
-  LINKS.search,
   LINKS.pricing,
-  LINKS.about,
+  LINKS.blog,
+  LINKS.faq,
+  LINKS.search,
 ]
 
 /**
