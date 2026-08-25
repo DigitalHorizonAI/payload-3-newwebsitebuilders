@@ -17,6 +17,8 @@
     "check:markdown-ingest": "cross-env NODE_OPTIONS=--no-deprecation payload run ./scripts/check-markdown-ingest.ts",
     "reimport:blog:check": "cross-env NODE_OPTIONS=--no-deprecation REIMPORT_MODE=check payload run ./scripts/reimport-blog-bodies.ts",
     "reimport:blog:write": "cross-env NODE_OPTIONS=--no-deprecation REIMPORT_MODE=write payload run ./scripts/reimport-blog-bodies.ts",
+    "translate:check": "cross-env NODE_OPTIONS=--no-deprecation TRANSLATE_MODE=check payload run ./scripts/translate-import.ts",
+    "translate:write": "cross-env NODE_OPTIONS=--no-deprecation TRANSLATE_MODE=write payload run ./scripts/translate-import.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",

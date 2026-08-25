@@ -1,0 +1,82 @@
+{
+  "geo": {
+    "de": {
+      "title": "SEO und GEO: zitiert werden, wenn KI antwortet",
+      "slug": "seo-und-geo-zitiert-werden-wenn-ki-antwortet",
+      "h1Html": "SEO und GEO: zitiert werden, wenn KI <span class=\"editorial\">antwortet</span>",
+      "excerpt": "Suche bringt noch immer Besucher. KI-Antworten bringen weniger Klicks und mehr Entscheidungen. Das ändert sich an deiner Website, wenn die Antwort geschrieben ist, bevor dich jemand erreicht.",
+      "metaTitle": "SEO und GEO: zitiert werden, wenn KI antwortet",
+      "metaDescription": "GEO ist generative engine optimisation: in einer KI-Antwort zitiert werden statt auf einer Seite gerankt. Konkrete Änderungen an einer Website, von eigenständigen Absätzen bis zu strukturierten Daten, erklärt für Inhaber.",
+      "keywords": "GEO, generative engine optimisation, SEO, AI Overviews, strukturierte Daten, schema.org, Antwortmaschinen"
+    },
+    "es": {
+      "title": "SEO y GEO: ser citado cuando la IA responde",
+      "slug": "seo-y-geo-ser-citado-cuando-la-ia-responde",
+      "h1Html": "SEO y GEO: ser citado cuando la IA <span class=\"editorial\">responde</span>",
+      "excerpt": "La búsqueda todavía envía tráfico. Las respuestas de IA envían menos clics y más decisiones. Esto es lo que cambia en tu web cuando la respuesta se escribe antes de que nadie llegue a ti.",
+      "metaTitle": "SEO y GEO: ser citado cuando la IA responde",
+      "metaDescription": "GEO es generative engine optimisation: ser citado en una respuesta de IA en lugar de posicionado en una página. Cambios concretos en una web, de párrafos autónomos a datos estructurados, explicados para dueños de negocio.",
+      "keywords": "GEO, generative engine optimisation, SEO, AI Overviews, datos estructurados, schema.org, motores de respuesta"
+    }
+  },
+  "handcoded": {
+    "de": {
+      "title": "Warum handcodierte Websites schneller laden als Baukästen",
+      "slug": "handcodiert-versus-baukasten",
+      "h1Html": "Warum handcodierte Websites <span class=\"editorial\">schneller</span> laden als Baukästen",
+      "excerpt": "Ein Baukasten schickt seinen ganzen Motor an jeden Besucher. Handgeschriebener Code schickt die Seite. Diese Lücke ist der Unterschied zwischen bestandenen Core Web Vitals und Erklärungsnot.",
+      "metaTitle": "Warum handcodierte Websites schneller laden als Baukästen",
+      "metaDescription": "Baukästen laden eine Layout-Engine im Browser, bevor dein Inhalt erscheint. Handcodierte Websites nicht. Was das kostet: Core Web Vitals, Plugin-Wartung und das, was du dem nächsten Entwickler übergeben kannst.",
+      "keywords": "handcodierte Website, Baukasten, Core Web Vitals, LCP, INP, CLS, WordPress, Webflow, Ladezeit"
+    },
+    "es": {
+      "title": "Por qué las webs codificadas a mano cargan más rápido que los constructores",
+      "slug": "codigo-a-mano-versus-constructores-de-paginas",
+      "h1Html": "Por qué las webs codificadas a mano cargan <span class=\"editorial\">más rápido</span> que los constructores",
+      "excerpt": "Un constructor de páginas envía todo su motor a cada visitante. El código escrito a mano envía la página. Esa brecha es la diferencia entre pasar los Core Web Vitals y explicar por qué no.",
+      "metaTitle": "Por qué las webs codificadas a mano cargan más rápido que los constructores",
+      "metaDescription": "Los constructores de páginas cargan un motor de maquetación en el navegador antes de que aparezca tu contenido. Las webs codificadas a mano, no. Lo que eso cuesta en Core Web Vitals, en mantenimiento de plugins y en lo que puedes entregar al siguiente desarrollador.",
+      "keywords": "web codificada a mano, constructor de páginas, Core Web Vitals, LCP, INP, CLS, WordPress, Webflow, velocidad de carga"
+    }
+  },
+  "cms": {
+    "de": {
+      "title": "Was ein CMS dir wirklich bringt",
+      "slug": "was-ein-cms-dir-wirklich-bringt",
+      "h1Html": "Was ein CMS dir <span class=\"editorial\">wirklich</span> bringt",
+      "excerpt": "Ein CMS ist keine Website. Es ist der Login, mit dem du die Wörter änderst, ohne jemanden anzurufen. Zu wissen, was es steuert und was nicht, erspart dir später einen Streit.",
+      "metaTitle": "Was ein CMS dir wirklich bringt",
+      "metaDescription": "Ein CMS gibt dir fünf Dinge: Bearbeitungszugriff, strukturierten Inhalt, Entwürfe, Rollen und eine Veröffentlichungshistorie. Ein neues Layout gibt es dir nicht. Was du verlangst, bevor deine Website gebaut wird.",
+      "keywords": "CMS, Headless CMS, Content-Management, Website bearbeiten, Sanity, Storyblok, WordPress"
+    },
+    "es": {
+      "title": "Qué te da un CMS en realidad",
+      "slug": "que-te-da-un-cms-en-realidad",
+      "h1Html": "Qué te da un CMS <span class=\"editorial\">en realidad</span>",
+      "excerpt": "Un CMS no es una web. Es el login donde cambias las palabras sin llamar a nadie. Saber qué partes controla, y cuáles no, te ahorra una pelea más adelante.",
+      "metaTitle": "Qué te da un CMS en realidad",
+      "metaDescription": "Un CMS te da cinco cosas: acceso de edición, contenido estructurado, borradores, roles y un historial de publicación. No te da un diseño nuevo. Qué pedir antes de que construyan tu web.",
+      "keywords": "CMS, CMS headless, gestión de contenidos, editar web, Sanity, Storyblok, WordPress"
+    }
+  },
+  "prepare": {
+    "de": {
+      "title": "Was du vor dem Website-Bau bereitlegst",
+      "slug": "was-du-vor-dem-website-bau-bereitlegst",
+      "h1Html": "Was du <span class=\"editorial\">vor</span> dem Website-Bau bereitlegst",
+      "excerpt": "Ein Build, der stockt, hängt fast nie am Code. Er wartet auf eine Logodatei, einen Domain-Login oder eine Entscheidung, die niemand getroffen hat. Hier sind die sieben Dinge, die bereitliegen sollten.",
+      "metaTitle": "Was du vor dem Website-Bau bereitlegst",
+      "metaDescription": "Sieben Dinge, die du vor dem Start eines Website-Baus sammelst: Domain-Zugang, das Logo als Vektor, echte Fotos, deine Seiten, der eine Satz, der Analytics-Account und die Person, die entscheidet.",
+      "keywords": "Website-Briefing, Domain-Zugang, DNS, Markenbestände, Website-Vorbereitung, Projektumfang"
+    },
+    "es": {
+      "title": "Qué preparar antes de construir tu web",
+      "slug": "que-preparar-antes-de-construir-tu-web",
+      "h1Html": "Qué preparar <span class=\"editorial\">antes</span> de construir tu web",
+      "excerpt": "Un proyecto que se atasca casi nunca está atascado en el código. Está esperando un archivo de logo, un login del dominio o una decisión que nadie ha tomado. Aquí están las siete cosas que hay que tener listas.",
+      "metaTitle": "Qué preparar antes de construir tu web",
+      "metaDescription": "Siete cosas que reunir antes de que empiece la construcción de una web: acceso al dominio, el logo en vectorial, fotografías reales, tus páginas, la frase única, la cuenta de analítica y la persona que decide.",
+      "keywords": "briefing web, acceso al dominio, DNS, activos de marca, preparación de una web, alcance del proyecto"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+<p>Zwanzig Jahre lang bestand die Aufgabe darin, zu ranken. Du hast eine Seite geschrieben, Google hat sie in eine Liste gestellt, und jemand hat geklickt. Der Klick war der Punkt. Heute wird ein großer Teil der Fragen direkt auf der Ergebnisseite beantwortet, oder in ChatGPT, oder in Perplexity, und die Person erreicht überhaupt keine Liste mehr. Sie liest eine Antwort, und darunter sieht sie 3 oder 4 Quellen.</p>
+
+<p>Das ist die ganze Verschiebung. Du konkurrierst nicht mehr um Position 1. Du konkurrierst darum, eine der Quellen zu sein, aus denen die Antwort gebaut wird. Die Branche nennt das GEO, generative engine optimisation, und es setzt auf SEO auf, statt es zu ersetzen.</p>
+
+<h2 id="was-ist-geo-und-wie-unterscheidet-es-sich-von-seo">Was ist GEO, und wie unterscheidet es sich von SEO?</h2>
+
+<p>SEO ist Optimierung, um gerankt zu werden. GEO ist Optimierung, um zitiert zu werden. SEO fragt, ob eine Suchmaschine deine Seite finden und als relevant einstufen kann. GEO fragt, ob ein Sprachmodell, das deine Seite gefunden hat, einen einzelnen Absatz herausheben und als Antwort verwenden kann, ohne ihn zu zerbrechen.</p>
+
+<p>Beide überschneiden sich stark. Eine Antwortmaschine muss dich immer noch crawlen, liest immer noch deine Titel und Überschriften, und es zählt immer noch, ob die Seite lädt. Was GEO hinzufügt, ist eine Schreibregel: die nützliche Einheit ist nicht mehr die Seite, sondern der Absatz.</p>
+
+<div class="keybox">
+  <span class="label">Kurz gesagt</span>
+  <p>GEO ist generative engine optimisation. Es bedeutet, eine Seite so zu schreiben und auszuzeichnen, dass ein einzelner Absatz herausgelöst und als vollständige Antwort verwendet werden kann, mit deinem Namen daran, von einem KI-System, das die meisten Leser nie auf deine Website schicken wird.</p>
+</div>
+
+<h2 id="warum-haben-sich-die-regeln-geandert">Warum haben sich die Regeln geändert?</h2>
+
+<p>Google hat im Mai 2024 begonnen, AI Overviews in den USA auszurollen, und sie seitdem ausgeweitet. ChatGPT, Perplexity und Copilot antworten mit Quellenangaben im Text. Überall dort zeigt die Oberfläche zuerst eine geschriebene Antwort und erst danach Links.</p>
+
+<p>Die praktische Folge für ein kleines Unternehmen: weniger Menschen landen nach einer allgemeinen Frage auf deiner Startseite, und mehr Menschen kommen an, die schon wissen, was du tust, und bereit sind zu buchen. Deine Besucherzahl kann fallen, während deine Anfragen stabil bleiben. Beurteile die Website nach Anfragen, nicht nach Sitzungen.</p>
+
+<h2 id="wie-schreibt-man-eine-seite-fur-eine-antwortmaschine">Wie schreibt man eine Seite für eine Antwortmaschine?</h2>
+
+<p>Schreibe so, dass jeder einzelne Absatz noch Sinn ergibt, wenn die Absätze darum herum gelöscht werden. Das ist die ganze Technik, und sie ist schwerer als sie klingt, weil gute Prosa sich normalerweise auf das stützt, was davor kam.</p>
+
+<p>Drei Gewohnheiten bringen dich fast ans Ziel:</p>
+
+<ul>
+  <li><strong>Nenne das Subjekt in jedem Absatz.</strong> Nicht "es dauert drei Tage", sondern "ein Build von NewWebsite.builders dauert drei Werktage". Ein Modell, das den zweiten Satz zitiert, trägt deinen Namen mit. Ein Modell, das den ersten zitiert, hat nichts zum Zuordnen.</li>
+  <li><strong>Stelle die Frage in der Überschrift, beantworte sie im ersten Satz darunter.</strong> Kein Anlauf. Der erste Satz nach einer Überschrift ist der Satz, der am wahrscheinlichsten extrahiert wird.</li>
+  <li><strong>Setze eine Zahl in die Antwort.</strong> Zahlen machen eine Passage zitierenswert, statt nur paraphrasierbar. "Schnell" ist nicht zitierbar. "Unter 2,5 Sekunden über eine 4G-Verbindung" schon.</li>
+</ul>
+
+<blockquote>
+  <p>Wenn ein Absatz den Absatz darüber braucht, um Sinn zu ergeben, wird eine Antwortmaschine ihn entweder überspringen oder falsch zitieren. Beides ist dein Problem, nicht das der Maschine.</p>
+</blockquote>
+
+<h2 id="welche-strukturierten-daten-braucht-eine-kleine-unternehmenswebsite">Welche strukturierten Daten braucht eine kleine Unternehmenswebsite?</h2>
+
+<p>Strukturierte Daten sind ein Block JSON in der Seite, der in einem festen Vokabular angibt, worum es auf der Seite geht. Crawler lesen ihn, bevor sie dein Design lesen. Vier Typen decken fast jede kleine Unternehmenswebsite ab:</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Typ</th><th>Gehört auf</th><th>Was er klärt</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>Organization</code></td><td>Jede Seite</td><td>Wer du bist, dein Logo, deine Muttergesellschaft</td></tr>
+    <tr><td><code>LocalBusiness</code> oder <code>ProfessionalService</code></td><td>Start- und Kontaktseite</td><td>Was du verkaufst, wo, in welcher Preisklasse</td></tr>
+    <tr><td><code>FAQPage</code></td><td>Jede Seite mit echten Fragen</td><td>Frage-Antwort-Paare, wörtlich</td></tr>
+    <tr><td><code>BlogPosting</code></td><td>Jeder Artikel</td><td>Überschrift, Autor, Datum, Sprache</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Dieser Artikel trägt <code>BlogPosting</code> und <code>BreadcrumbList</code>. Hier ist die Form, gekürzt auf die Felder, die zählen:</p>
+
+<pre><code>{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SEO und GEO: zitiert werden, wenn KI antwortet",
+  "datePublished": "2026-08-18",
+  "inLanguage": "de",
+  "author": { "@type": "Organization", "name": "NewWebsite.builders" },
+  "publisher": { "@type": "Organization", "name": "NewWebsite.builders" },
+  "mainEntityOfPage": "https://newwebsite.builders/blog/de/..."
+}</code></pre>
+
+<p>Strukturierte Daten lassen eine schwache Seite nicht ranken. Sie nehmen einer guten Seite die Mehrdeutigkeit, und das ist eine andere, kleinere Aufgabe. Mach es, weil es 20 Zeilen kostet, nicht weil es Magie ist.</p>
+
+<h2 id="zahlt-klassisches-seo-noch">Zählt klassisches SEO noch?</h2>
+
+<p>Ja, und es ist immer noch die größere Hälfte. Eine Antwortmaschine kann keine Seite zitieren, die sie nicht abrufen, nicht rendern oder nicht fertig laden kann. Jedes der alten Fundamente ist jetzt eine Voraussetzung für das neue Spiel:</p>
+
+<ul>
+  <li>Ein <code>&lt;h1&gt;</code> pro Seite, das sagt, was die Seite ist.</li>
+  <li>Ein echter <code>&lt;title&gt;</code> und eine Meta-Beschreibung, geschrieben für einen Menschen, nicht vollgestopft.</li>
+  <li>Eine kanonische URL auf jeder Seite, die auf sich selbst zeigt.</li>
+  <li><code>hreflang</code>-Alternativen, wenn du in mehr als einer Sprache veröffentlichst, in beide Richtungen.</li>
+  <li>Eine Sitemap, die jede Seite auflistet, die gefunden werden soll.</li>
+  <li>Core Web Vitals innerhalb der Google-Schwellenwerte, was <a href="handcodiert-versus-baukasten.html">auf einer handcodierten Website leichter ist als in einem Baukasten</a>: Largest Contentful Paint unter 2,5 Sekunden, Interaction to Next Paint unter 200 Millisekunden, Cumulative Layout Shift unter 0,1.</li>
+</ul>
+
+<h2 id="was-du-diesen-monat-an-deiner-website-anderst">Was du diesen Monat an deiner Website änderst</h2>
+
+<p>Sieben Änderungen, in der Reihenfolge, in der sie sich auszahlen:</p>
+
+<ol>
+  <li>Schreibe deine 5 wichtigsten Seiten so um, dass jede Überschrift eine Frage ist, die ein Kunde wirklich stellt.</li>
+  <li>Mache den ersten Satz unter jeder Überschrift zu einer vollständigen Antwort, mit deinem Firmennamen darin.</li>
+  <li>Setze eine Zahl in jede Aussage. Ersetze "schnell" durch die tatsächliche Zahl.</li>
+  <li>Füge der Website <code>Organization</code>- und <code>ProfessionalService</code>-Daten hinzu, und <code>FAQPage</code> auf deiner Fragenseite.</li>
+  <li>Veröffentliche ein echtes FAQ, mit den Fragen so formuliert, wie Menschen sie laut aussprechen. <a href="was-du-vor-dem-website-bau-bereitlegst.html">Der eine Satz, der dein Unternehmen beschreibt</a>, gehört ganz nach oben.</li>
+  <li>Prüfe deine Core Web Vitals in der Google Search Console und behebe alles außerhalb der drei Schwellenwerte oben.</li>
+  <li>Stelle sicher, dass deine <code>robots.txt</code> die Crawler nicht blockiert, von denen du zitiert werden willst, und dass deine Sitemap eingereicht ist.</li>
+</ol>
+
+<h2 id="woran-erkennst-du-ob-es-funktioniert">Woran erkennst du, ob es funktioniert?</h2>
+
+<p>Frag die Maschinen direkt. Gib einmal im Monat deine eigenen 10 Kauffragen in ChatGPT, Perplexity und Google ein und notiere, ob du genannt wurdest. Diese Liste, über 6 Monate geführt, sagt dir mehr als jeder Rank-Tracker, weil sie das misst, worauf es dir jetzt ankommt: die Quelle zu sein.</p>
+
+<p>Behalte dann eine Zahl aus der alten Welt. Verfolge Anfragen pro Monat, nicht Sitzungen pro Monat. Wenn Zitate steigen und Anfragen steigen, während der Traffic flach bleibt, macht die Website ihren Job.</p>

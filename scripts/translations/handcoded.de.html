@@ -1,0 +1,71 @@
+<p>Jede Website ist ein Satz Anweisungen, die ein Browser ausführen muss, bevor ein Besucher irgendetwas sieht. Die Frage, die entscheidet, wie schnell sich deine Website anfühlt, ist simpel: wie viele dieser Anweisungen handeln von deinem Inhalt, und wie viele von dem Werkzeug, das ihn gebaut hat.</p>
+
+<p>Auf einer handcodierten Website handeln fast alle von deinem Inhalt. In einem Baukasten handelt ein großer Teil vom Baukasten.</p>
+
+<h2 id="was-schickt-ein-baukasten-wirklich-an-den-browser">Was schickt ein Baukasten wirklich an den Browser?</h2>
+
+<p>Ein Baukasten ist ein Programm, mit dem du Blöcke herumziehst, und das diese Blöcke dann im Browser des Besuchers wieder zusammensetzt. Dafür muss er die Rekonstruktionsmaschinerie mit jeder Seite mitschicken. In der Praxis heißt das: ein Universal-Stylesheet, das jedes Layout abdecken muss, das das Werkzeug erzeugen kann, eine JavaScript-Laufzeit, die die Blöcke wieder zusammenbaut, und ein Stapel Plugin-Skripte für die Formulare, die Slider und das Cookie-Banner.</p>
+
+<p>Nichts davon ist dein Text oder sind deine Fotos. Alles davon wird heruntergeladen, geparst und ausgeführt, bevor deine Überschrift gezeichnet ist. Du kannst es auf deiner eigenen Website in 2 Minuten sehen: öffne PageSpeed Insights, teste deine Startseite und lies die Zeilen "Reduce unused JavaScript" und "Reduce unused CSS". Diese zwei Zahlen sind die Steuer.</p>
+
+<div class="keybox">
+  <span class="label">Kurz gesagt</span>
+  <p>Ein Baukasten schickt seine Layout-Engine an jeden Besucher, weil er die Seite im Browser neu baut. Eine handcodierte Website schickt die fertige Seite, also hat der Browser nichts zusammenzusetzen. Deshalb liefert dasselbe Design, auf beide Arten gebaut, zwei sehr unterschiedliche Largest-Contentful-Paint-Zeiten.</p>
+</div>
+
+<h2 id="was-bedeutet-handcodiert-genau">Was bedeutet handcodiert, genau?</h2>
+
+<p>Handcodiert heißt: ein Mensch hat das HTML, das CSS und das bisschen JavaScript geschrieben, das die Seite braucht, und sonst ist nichts in der Datei. Es gibt keine Baukasten-Laufzeit, weil es keinen Baukasten gibt. Das Markup, das du im Browser inspizierst, ist das Markup, das jemand getippt hat.</p>
+
+<p>Es heißt nicht primitiv, und es heißt nicht, dass du nichts selbst ändern kannst. Unsere Builds sind handgeschrieben und werden trotzdem mit einem CMS ausgeliefert, also gehören Text, Bilder und Seiten dir, änderbar über einen Browser-Login. <a href="was-ein-cms-dir-wirklich-bringt.html">Was ein CMS dir bringt</a> ist ein eigener Artikel. Das Handcodieren betrifft, was der Besucher herunterlädt. Das CMS betrifft, was du kontrollierst. Das sind getrennte Fragen, und den meisten Leuten wird erzählt, sie müssten wählen.</p>
+
+<h2 id="wie-viel-macht-der-unterschied-wirklich-aus">Wie viel macht der Unterschied wirklich aus?</h2>
+
+<p>Google veröffentlicht drei Schwellenwerte, zusammen Core Web Vitals genannt, und sie sind die fairste verfügbare Messlatte, weil sie für alle gleich sind:</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Metrik</th><th>Gut</th><th>Was sie misst</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Largest Contentful Paint</td><td>unter 2,5 s</td><td>Wann das Wichtigste auf dem Bildschirm fertig gezeichnet ist</td></tr>
+    <tr><td>Interaction to Next Paint</td><td>unter 200 ms</td><td>Wie lange die Seite braucht, um auf ein Tippen zu reagieren</td></tr>
+    <tr><td>Cumulative Layout Shift</td><td>unter 0,1</td><td>Wie stark die Seite beim Laden herumspringt</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Interaction to Next Paint hat im März 2024 First Input Delay als Core Web Vital abgelöst, und es ist der Wert, der Baukästen am schwersten fällt, weil er misst, wie beschäftigt der Hauptthread ist. Ein Browser, der eine Layout-Engine ausführt, ist ein Browser, der nicht auf ein Tippen antworten kann.</p>
+
+<p>Layout Shift ist das andere ehrliche Indiz. Ein Baukasten, der Elemente per JavaScript vermisst, nachdem das CSS geladen ist, verschiebt Dinge einen Moment, nachdem du zu lesen begonnen hast. Handgeschriebenes CSS legt die Größe vor dem ersten Paint fest, also gibt es nichts zu verschieben.</p>
+
+<h2 id="ist-geschwindigkeit-der-einzige-grund">Ist Geschwindigkeit der einzige Grund?</h2>
+
+<p>Nein. Geschwindigkeit ist der messbare, also bekommt er die Aufmerksamkeit, aber zwei andere kosten über 3 Jahre mehr.</p>
+
+<p><strong>Wartungsfläche.</strong> Eine typische Baukasten-Website läuft mit einem Theme plus 15 bis 25 Plugins, jedes mit eigenem Release-Rhythmus, jedes in der Lage, die anderen zu brechen. Jedes Update ist ein kleines Risiko, das du eingehen musst, denn Updates auszulassen ist der Weg, auf dem Websites kompromittiert werden. Eine handcodierte Website hat keine Plugin-Liste, also gibt es an einem Dienstagmorgen nichts abzugleichen.</p>
+
+<p><strong>Portabilität.</strong> Inhalt, der im proprietären Blockformat eines Baukastens eingeschlossen ist, ist Inhalt, den nur dieser Baukasten rendern kann. Wenn du umziehen willst, baust du neu. Eine handcodierte Website ist HTML, CSS und JavaScript in einem Repository, das jeder Entwickler der Welt öffnen und weiterführen kann. Das meinen wir, wenn wir sagen, der Code gehört dir: nicht dass du einen Login bekommst, sondern etwas, an dem ein anderer Mensch wirklich weiterarbeiten kann.</p>
+
+<blockquote>
+  <p>Stell jeder Agentur eine Frage: wenn wir morgen aufhören zu zahlen, was haben wir dann noch? Die Antwort trennt eine Website von einer Miete.</p>
+</blockquote>
+
+<h2 id="wann-ist-ein-baukasten-die-richtige-antwort">Wann ist ein Baukasten die richtige Antwort?</h2>
+
+<p>Wenn niemand jemals Code für dich schreiben wird. Ein Baukasten ist wirklich besser als keine Website, und besser als eine handcodierte Website, die veraltet, weil niemand sie anfassen kann. Wenn dein Plan ist, sie an einem Wochenende selbst zu bauen und ständig zu ändern, nimm einen Baukasten und hab kein schlechtes Gewissen dabei.</p>
+
+<p>Der Moment, in dem er aufhört, die richtige Antwort zu sein, ist, wenn die Website anfängt, echtes Geld zu tragen. Sobald Suchtraffic, Buchungen oder Verkäufe von der Seite abhängen, werden die 1 bis 2 Sekunden, die du an die Laufzeit des Baukastens abgibst, und der Plugin-Stapel, den du erbst, zu laufenden Kosten statt zu einer Bequemlichkeit.</p>
+
+<h2 id="was-solltest-du-fragen-bevor-du-unterschreibst">Was solltest du fragen, bevor du unterschreibst?</h2>
+
+<ol>
+  <li>Was genau gehört mir am Ende, und wo liegt es?</li>
+  <li>Kann ich Text und Bilder selbst ändern, ohne euch anzurufen? Zeigt mir den Login.</li>
+  <li>Was sind die Core Web Vitals der letzten 3 Websites, die ihr ausgeliefert habt? Frag nach den URLs und prüfe sie selbst.</li>
+  <li>Von wie vielen Plugins oder Erweiterungen wird diese Website abhängen?</li>
+  <li>Wenn ich nächstes Jahr einen anderen Entwickler beauftrage, was übergebe ich ihm?</li>
+</ol>
+
+<p>Jeder Anbieter, der diese 5 Fragen nicht in einer E-Mail beantworten kann, beantwortet eine andere Frage als die, die du gestellt hast.</p>
