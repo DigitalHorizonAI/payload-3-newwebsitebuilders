@@ -1,0 +1,71 @@
+<p>Toda web es un conjunto de instrucciones que un navegador tiene que ejecutar antes de que el visitante vea nada. La pregunta que decide lo rápida que se siente tu web es simple: cuántas de esas instrucciones tratan de tu contenido, y cuántas de la herramienta que lo creó.</p>
+
+<p>En una web codificada a mano, casi todas tratan de tu contenido. En un constructor de páginas, una gran parte trata del constructor.</p>
+
+<h2 id="que-envia-realmente-un-constructor-de-paginas-al-navegador">¿Qué envía realmente un constructor de páginas al navegador?</h2>
+
+<p>Un constructor de páginas es un programa que te deja arrastrar bloques y luego reconstruye esos bloques en el navegador del visitante. Para hacerlo tiene que enviar la maquinaria de reconstrucción con cada página. En la práctica eso significa una hoja de estilos genérica escrita para cubrir cualquier diseño que la herramienta pueda producir, un runtime de JavaScript que vuelve a ensamblar los bloques, y una pila de scripts de plugins para los formularios, los sliders y el banner de cookies.</p>
+
+<p>Nada de eso es tu texto ni tus fotografías. Todo se descarga, se interpreta y se ejecuta antes de que tu titular se pinte. Puedes verlo en tu propia web en 2 minutos: abre PageSpeed Insights, analiza tu página de inicio y lee las líneas llamadas "Reduce unused JavaScript" y "Reduce unused CSS". Esos dos números son el impuesto.</p>
+
+<div class="keybox">
+  <span class="label">En resumen</span>
+  <p>Un constructor de páginas envía su motor de maquetación a cada visitante porque reconstruye la página en el navegador. Una web codificada a mano envía la página terminada, así que el navegador no tiene nada que ensamblar. Por eso el mismo diseño, construido de las dos maneras, produce dos tiempos de Largest Contentful Paint muy distintos.</p>
+</div>
+
+<h2 id="que-significa-exactamente-codificado-a-mano">¿Qué significa exactamente codificado a mano?</h2>
+
+<p>Codificado a mano significa que una persona escribió el HTML, el CSS y la pequeña cantidad de JavaScript que la página necesita, y no hay nada más en el archivo. No hay runtime de constructor, porque no hay constructor. El código que inspeccionas en el navegador es el código que alguien tecleó.</p>
+
+<p>No significa primitivo, y no significa que no puedas editarlo. Nuestros proyectos están escritos a mano y aun así se entregan con un CMS, de modo que el texto, las imágenes y las páginas son tuyos y los cambias desde un login en el navegador. <a href="que-te-da-un-cms-en-realidad.html">Lo que te da un CMS</a> es otro artículo. Codificar a mano trata de lo que el visitante descarga. El CMS trata de lo que tú controlas. Son preguntas separadas, y a la mayoría le dicen que tiene que elegir.</p>
+
+<h2 id="cuanto-importa-la-diferencia-en-realidad">¿Cuánto importa la diferencia en realidad?</h2>
+
+<p>Google publica tres umbrales, llamados en conjunto Core Web Vitals, y son el marcador más justo disponible porque son iguales para todos:</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Métrica</th><th>Bueno</th><th>Qué mide</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Largest Contentful Paint</td><td>menos de 2,5 s</td><td>Cuándo termina de dibujarse lo principal en pantalla</td></tr>
+    <tr><td>Interaction to Next Paint</td><td>menos de 200 ms</td><td>Cuánto tarda la página en responder al tocarla</td></tr>
+    <tr><td>Cumulative Layout Shift</td><td>menos de 0,1</td><td>Cuánto salta la página mientras carga</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Interaction to Next Paint sustituyó a First Input Delay como Core Web Vital en marzo de 2024, y es el que más les cuesta a los constructores, porque mide lo ocupado que está el hilo principal. Un navegador ejecutando un motor de maquetación es un navegador que no puede responder a un toque.</p>
+
+<p>El desplazamiento de diseño es la otra señal honesta. Un constructor que mide elementos con JavaScript después de cargar el CSS moverá cosas un instante después de que empieces a leer. El CSS escrito a mano fija el tamaño antes del primer pintado, así que no hay nada que mover.</p>
+
+<h2 id="es-la-velocidad-la-unica-razon">¿Es la velocidad la única razón?</h2>
+
+<p>No. La velocidad es la medible, así que se lleva la atención, pero hay otras dos que cuestan más a lo largo de 3 años.</p>
+
+<p><strong>Superficie de mantenimiento.</strong> Una web típica de constructor funciona con un tema más 15 a 25 plugins, cada uno con su propio calendario de versiones, cada uno capaz de romper a los demás. Cada actualización es una pequeña apuesta que tienes que aceptar, porque saltarse actualizaciones es como las webs acaban comprometidas. Una web codificada a mano no tiene lista de plugins, así que no hay nada que reconciliar un martes por la mañana.</p>
+
+<p><strong>Portabilidad.</strong> El contenido encerrado en el formato de bloques propietario de un constructor es contenido que solo ese constructor puede renderizar. Cuando quieras mudarte, reconstruyes. Una web codificada a mano es HTML, CSS y JavaScript en un repositorio, que cualquier desarrollador del mundo puede abrir y continuar. Eso es lo que queremos decir con que el código es tuyo: no que te dan un login, sino algo en lo que otra persona puede trabajar de verdad.</p>
+
+<blockquote>
+  <p>Hazle a cualquier agencia una pregunta: si dejamos de pagaros mañana, ¿qué nos queda? La respuesta separa una web de un alquiler.</p>
+</blockquote>
+
+<h2 id="cuando-es-un-constructor-la-respuesta-correcta">¿Cuándo es un constructor la respuesta correcta?</h2>
+
+<p>Cuando nadie va a escribir código por ti, nunca. Un constructor es genuinamente mejor que no tener web, y mejor que una web codificada a mano que se queda obsoleta porque nadie puede tocarla. Si tu plan es construirla tú mismo en un fin de semana y cambiarla constantemente, usa un constructor y no te sientas mal por ello.</p>
+
+<p>El momento en que deja de ser la respuesta correcta es cuando la web empieza a mover dinero de verdad. En cuanto el tráfico de búsqueda, las reservas o las ventas dependen de la página, los 1 a 2 segundos que regalas al runtime del constructor, y la pila de plugins que heredas, se convierten en un coste corriente en lugar de una comodidad.</p>
+
+<h2 id="que-deberias-preguntar-antes-de-firmar">¿Qué deberías preguntar antes de firmar?</h2>
+
+<ol>
+  <li>¿Qué es exactamente lo que poseo al final, y dónde vive?</li>
+  <li>¿Puedo editar el texto y las imágenes yo mismo sin llamaros? Enséñame el login.</li>
+  <li>¿Cuáles son los Core Web Vitals de las últimas 3 webs que habéis entregado? Pide las URLs y compruébalas tú mismo.</li>
+  <li>¿De cuántos plugins o extensiones dependerá esta web?</li>
+  <li>Si contrato a otro desarrollador el año que viene, ¿qué le entrego?</li>
+</ol>
+
+<p>Cualquier proveedor que no pueda responder esas 5 preguntas en un correo está respondiendo a una pregunta distinta de la que hiciste.</p>

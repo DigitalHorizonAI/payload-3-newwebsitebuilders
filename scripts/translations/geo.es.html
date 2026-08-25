@@ -1,0 +1,102 @@
+<p>Durante veinte años el trabajo consistía en posicionar. Escribías una página, Google la ponía en una lista y alguien hacía clic. El clic era el objetivo. Hoy una gran parte de las preguntas se responden en la propia página de resultados, o dentro de ChatGPT, o dentro de Perplexity, y la persona nunca llega a ver una lista. Lee una respuesta, y debajo ve 3 o 4 fuentes.</p>
+
+<p>Ese es todo el cambio. Ya no compites por la posición 1. Compites por ser una de las fuentes con las que se construye la respuesta. El sector llama a esto GEO, generative engine optimisation, y se apoya sobre el SEO en lugar de sustituirlo.</p>
+
+<h2 id="que-es-geo-y-en-que-se-diferencia-del-seo">¿Qué es GEO y en qué se diferencia del SEO?</h2>
+
+<p>SEO es optimizar para ser posicionado. GEO es optimizar para ser citado. El SEO pregunta si un buscador puede encontrar tu página y juzgarla relevante. El GEO pregunta si un modelo de lenguaje, tras encontrar tu página, puede extraer un párrafo y usarlo como respuesta sin romperlo.</p>
+
+<p>Los dos se solapan mucho. Un motor de respuestas todavía tiene que rastrearte, todavía lee tus títulos y encabezados, y todavía le importa si la página carga. Lo que añade el GEO es una regla de escritura: la unidad útil ya no es la página, es el párrafo.</p>
+
+<div class="keybox">
+  <span class="label">En resumen</span>
+  <p>GEO es generative engine optimisation. Significa escribir y marcar una página de modo que un solo párrafo pueda extraerse y usarse como respuesta completa, con tu nombre adjunto, por un sistema de IA que nunca enviará a la mayoría de los lectores a tu web.</p>
+</div>
+
+<h2 id="por-que-cambiaron-las-reglas">¿Por qué cambiaron las reglas?</h2>
+
+<p>Google empezó a desplegar AI Overviews en Estados Unidos en mayo de 2024, y los ha ampliado desde entonces. ChatGPT, Perplexity y Copilot responden con citas dentro del texto. En todos ellos, la interfaz muestra primero una respuesta escrita y después los enlaces.</p>
+
+<p>La consecuencia práctica para un negocio pequeño: menos personas aterrizan en tu página de inicio tras una pregunta general, y más personas llegan sabiendo ya lo que haces, listas para reservar. Tu cifra de tráfico puede bajar mientras tus consultas se mantienen. Juzga la web por las consultas, no por las sesiones.</p>
+
+<h2 id="como-se-escribe-una-pagina-para-un-motor-de-respuestas">¿Cómo se escribe una página para un motor de respuestas?</h2>
+
+<p>Escribe de forma que cada párrafo siga teniendo sentido si se borran los párrafos que lo rodean. Esa es toda la técnica, y es más difícil de lo que parece, porque la buena prosa suele apoyarse en lo que vino antes.</p>
+
+<p>Tres hábitos te llevan casi hasta el final:</p>
+
+<ul>
+  <li><strong>Nombra el sujeto en cada párrafo.</strong> No "tarda tres días", sino "un proyecto de NewWebsite.builders tarda tres días laborables". Un modelo que cite la segunda frase lleva tu nombre consigo. Un modelo que cite la primera no tiene nada que atribuir.</li>
+  <li><strong>Haz la pregunta en el encabezado y respóndela en la primera frase de debajo.</strong> Sin rodeos. La primera frase después de un encabezado es la que tiene más probabilidades de ser extraída.</li>
+  <li><strong>Pon un número en la respuesta.</strong> Los números son lo que hace que un pasaje merezca ser citado en lugar de parafraseado. "Rápido" no es citable. "Menos de 2,5 segundos con una conexión 4G" sí.</li>
+</ul>
+
+<blockquote>
+  <p>Si un párrafo necesita el párrafo anterior para tener sentido, un motor de respuestas lo saltará o lo citará mal. Ambas cosas son tu problema, no del motor.</p>
+</blockquote>
+
+<h2 id="que-datos-estructurados-necesita-la-web-de-un-negocio-pequeno">¿Qué datos estructurados necesita la web de un negocio pequeño?</h2>
+
+<p>Los datos estructurados son un bloque de JSON dentro de la página que declara, en un vocabulario fijo, de qué trata la página. Los rastreadores lo leen antes que tu diseño. Cuatro tipos cubren casi cualquier web de negocio pequeño:</p>
+
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr><th>Tipo</th><th>Va en</th><th>Qué resuelve</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>Organization</code></td><td>Todas las páginas</td><td>Quién eres, tu logo, tu empresa matriz</td></tr>
+    <tr><td><code>LocalBusiness</code> o <code>ProfessionalService</code></td><td>Inicio y contacto</td><td>Qué vendes, dónde, en qué rango de precios</td></tr>
+    <tr><td><code>FAQPage</code></td><td>Cualquier página con preguntas reales</td><td>Pares de pregunta y respuesta, literales</td></tr>
+    <tr><td><code>BlogPosting</code></td><td>Cada artículo</td><td>Titular, autor, fecha, idioma</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Este artículo lleva <code>BlogPosting</code> y <code>BreadcrumbList</code>. Esta es la forma, recortada a los campos que importan:</p>
+
+<pre><code>{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SEO y GEO: ser citado cuando la IA responde",
+  "datePublished": "2026-08-18",
+  "inLanguage": "es",
+  "author": { "@type": "Organization", "name": "NewWebsite.builders" },
+  "publisher": { "@type": "Organization", "name": "NewWebsite.builders" },
+  "mainEntityOfPage": "https://newwebsite.builders/blog/es/..."
+}</code></pre>
+
+<p>Los datos estructurados no hacen posicionar a una página floja. Quitan la ambigüedad a una buena, que es un trabajo distinto y más pequeño. Hazlo porque cuesta 20 líneas, no porque sea magia.</p>
+
+<h2 id="sigue-contando-el-seo-clasico">¿Sigue contando el SEO clásico?</h2>
+
+<p>Sí, y sigue siendo la mitad más grande. Un motor de respuestas no puede citar una página que no puede descargar, renderizar o terminar de cargar. Cada uno de los viejos fundamentos es ahora un requisito para el juego nuevo:</p>
+
+<ul>
+  <li>Un <code>&lt;h1&gt;</code> por página que diga qué es la página.</li>
+  <li>Un <code>&lt;title&gt;</code> real y una meta descripción escrita para una persona, no rellenada de palabras clave.</li>
+  <li>Una URL canónica en cada página, apuntando a sí misma.</li>
+  <li>Alternativas <code>hreflang</code> si publicas en más de un idioma, en ambas direcciones.</li>
+  <li>Un sitemap que liste todas las páginas que quieres que se encuentren.</li>
+  <li>Core Web Vitals dentro de los umbrales de Google, lo que <a href="codigo-a-mano-versus-constructores-de-paginas.html">resulta más fácil en una web codificada a mano que en un constructor de páginas</a>: Largest Contentful Paint por debajo de 2,5 segundos, Interaction to Next Paint por debajo de 200 milisegundos, Cumulative Layout Shift por debajo de 0,1.</li>
+</ul>
+
+<h2 id="que-cambiar-en-tu-web-este-mes">Qué cambiar en tu web este mes</h2>
+
+<p>Siete cambios, en el orden en que dan resultado:</p>
+
+<ol>
+  <li>Reescribe tus 5 páginas más importantes para que cada encabezado sea una pregunta que un cliente hace de verdad.</li>
+  <li>Haz que la primera frase bajo cada encabezado sea una respuesta completa, con el nombre de tu negocio dentro.</li>
+  <li>Pon un número en cada afirmación. Sustituye "rápidamente" por la cifra real.</li>
+  <li>Añade datos estructurados <code>Organization</code> y <code>ProfessionalService</code> a la web, y <code>FAQPage</code> a tu página de preguntas.</li>
+  <li>Publica un FAQ de verdad, con las preguntas escritas tal como la gente las dice en voz alta. <a href="que-preparar-antes-de-construir-tu-web.html">La frase única que describe tu negocio</a> va arriba del todo.</li>
+  <li>Revisa tus Core Web Vitals en Google Search Console y corrige todo lo que quede fuera de los tres umbrales de arriba.</li>
+  <li>Asegúrate de que tu <code>robots.txt</code> no bloquea a los rastreadores que quieres que te citen, y de que tu sitemap está enviado.</li>
+</ol>
+
+<h2 id="como-sabes-si-esta-funcionando">¿Cómo sabes si está funcionando?</h2>
+
+<p>Pregunta a los motores directamente. Una vez al mes, introduce tus propias 10 preguntas de compra en ChatGPT, Perplexity y Google, y anota si te nombraron. Esa lista, mantenida durante 6 meses, te dice más que cualquier rastreador de posiciones, porque mide lo que ahora te importa: ser la fuente.</p>
+
+<p>Después conserva un número del mundo antiguo. Sigue las consultas por mes, no las sesiones por mes. Si las citas suben y las consultas suben mientras el tráfico se queda plano, la web está haciendo su trabajo.</p>
