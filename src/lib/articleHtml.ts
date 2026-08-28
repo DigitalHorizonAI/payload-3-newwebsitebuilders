@@ -13,7 +13,7 @@
  * `<h2 id="...">` anchors — and the stock converters know none of it.
  */
 
-import { isSafeUrl } from '@/lib/isSafeUrl'
+import { sanitizeUrl } from 'payload/shared'
 
 /** Anchors the articles already rank with. Lexical headings cannot carry an
  * id attribute, so the id is recovered from the heading text at render time:
@@ -144,10 +144,14 @@ const inline = (nodes: LexicalNode[], opts: ArticleHtmlOptions): string =>
       }
       if (node.type === 'link' || node.type === 'autolink') {
         const url = String((node.fields as { url?: unknown })?.url ?? '')
-        // Blank a disallowed protocol, keep the words. escapeAttr only escapes
-        // & < > " — none of which appear in `javascript:alert(1)` — so without
-        // this the URL reaches the static sites verbatim.
-        const href = isSafeUrl(url) ? escapeAttr(url) : ''
+        // sanitizeUrl is Payload's own: it returns '#' for a disallowed
+        // protocol and leaves http/https/mailto/tel and relative hrefs alone.
+        // Needed because escapeAttr only escapes & < > " — none of which appear
+        // in `javascript:alert(1)` — so without it the URL would reach the
+        // static sites verbatim. The stock convertLexicalToHTMLAsync applies
+        // the same function; this serializer is hand-rolled for byte-identity
+        // with the pre-CMS site, so it has to apply it itself.
+        const href = escapeAttr(sanitizeUrl(url))
         return `<a href="${href}">${inline(node.children ?? [], opts)}</a>`
       }
       if (node.type === 'linebreak') return '<br />'

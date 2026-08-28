@@ -18,10 +18,11 @@
  * either 400s or lands as one flat blob of literal `##` and `-` characters.
  *
  * It also covers link safety, but asserts it at the RENDER sink rather than at
- * ingest: neither converter allowlists protocols (Lexical ships an allowlist
- * but applies it only when the editor draws a link), and the hook is only one
- * of four writers into posts.content. So the assertion is on articleHtml's
- * output, which every writer reaches.
+ * ingest: neither converter allowlists protocols on import (Lexical ships an
+ * allowlist but applies it only when the editor draws a link), and the hook is
+ * only one of four writers into posts.content. So the assertion is on
+ * articleHtml's output, which every writer reaches. The guard itself is
+ * Payload's own `sanitizeUrl`, which maps a disallowed protocol to '#'.
  *
  * ## Why it asserts on headings and lists specifically
  *
@@ -181,6 +182,11 @@ check(
 // output — the string the static sites splice into their pages — rather than on
 // the stored tree, which keeps the original URL by design.
 //
+// A rejected href renders as '#', not as empty: the guard is `sanitizeUrl` from
+// payload/shared, the same function Payload's own convertLexicalToHTMLAsync
+// applies. articleHtml is hand-rolled for byte-identity with the pre-CMS site,
+// so it has to call it itself.
+//
 // Every rejection case FIRST asserts that the input produced a link node at
 // all. Without that the assertion is vacuous: `[click](javascript:alert(1))`
 // produces no link node, because Payload's markdown link importer excludes
@@ -199,22 +205,23 @@ const renderedHrefs = (html: string): string[] =>
 
 /** [label, input, what the rendered href must be] */
 const linkCases: [string, string, string][] = [
-  // Rejected — the href is blanked, the words are kept.
-  ['html javascript:', '<p><a href="javascript:alert(1)">click</a></p>', ''],
+  // Rejected — the href becomes '#', the words are kept.
+  ['html javascript:', '<p><a href="javascript:alert(1)">click</a></p>', '#'],
   // NOT `alert(1)`: the parens break markdown link parsing and no link node is
   // produced, which is what made the old version of this case untestable.
-  ['markdown javascript:', '[click](javascript:alert)', ''],
-  ['html data:', '<p><a href="data:text/html;base64,PHNjcmlwdD4=">click</a></p>', ''],
+  ['markdown javascript:', '[click](javascript:alert)', '#'],
+  ['html data:', '<p><a href="data:text/html;base64,PHNjcmlwdD4=">click</a></p>', '#'],
   // Nested inside a table cell — every other case is a top-level <p><a>, so a
   // shallow-recursion regression in the serializer would pass without this.
   [
     'html nested in <td>',
     '<table><tbody><tr><td><a href="javascript:alert">click</a></td></tr></tbody></table>',
-    '',
+    '#',
   ],
-  // Kept — a relative href must survive. This is the whole reason isSafeUrl
-  // parses against a base URL; without it every relative link in every article
-  // silently loses its href and CMSLink deletes the words from the sentence.
+  // Kept — a relative href must survive. sanitizeUrl passes anything with no
+  // protocol through untouched; a stricter guard would blank them, and CMSLink
+  // returns null on a falsy href, which would delete the words from the
+  // sentence rather than just the link.
   ['html relative', '<p><a href="about.html">click</a></p>', 'about.html'],
   ['html absolute', '<p><a href="https://example.com/x?a=1">ok</a></p>', 'https://example.com/x?a=1'],
   ['markdown absolute', '[ok](https://example.com/y)', 'https://example.com/y'],
