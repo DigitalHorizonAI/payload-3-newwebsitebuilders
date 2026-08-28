@@ -1,6 +1,7 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
 import { cn } from 'src/utilities/cn'
 import { getDocPath } from '@/utilities/collectionPrefixMap'
+import { isSafeUrl } from '@/lib/isSafeUrl'
 import Link from 'next/link'
 import React from 'react'
 
@@ -39,7 +40,10 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
       ? getDocPath(reference?.relationTo, reference.value.slug)
       : url
 
-  if (!href) return null
+  // An unsafe protocol is dropped the same way an empty href already was.
+  // This is the chokepoint for the Payload blog page: RichText/serialize.tsx
+  // routes its link nodes through CMSLink, as does every other link in the app.
+  if (!href || !isSafeUrl(href)) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}

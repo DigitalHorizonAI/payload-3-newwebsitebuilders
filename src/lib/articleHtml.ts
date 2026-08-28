@@ -13,6 +13,8 @@
  * `<h2 id="...">` anchors — and the stock converters know none of it.
  */
 
+import { isSafeUrl } from '@/lib/isSafeUrl'
+
 /** Anchors the articles already rank with. Lexical headings cannot carry an
  * id attribute, so the id is recovered from the heading text at render time:
  * first from this map (the pre-CMS hand-written ids), else by slugifying —
@@ -142,7 +144,11 @@ const inline = (nodes: LexicalNode[], opts: ArticleHtmlOptions): string =>
       }
       if (node.type === 'link' || node.type === 'autolink') {
         const url = String((node.fields as { url?: unknown })?.url ?? '')
-        return `<a href="${escapeAttr(url)}">${inline(node.children ?? [], opts)}</a>`
+        // Blank a disallowed protocol, keep the words. escapeAttr only escapes
+        // & < > " — none of which appear in `javascript:alert(1)` — so without
+        // this the URL reaches the static sites verbatim.
+        const href = isSafeUrl(url) ? escapeAttr(url) : ''
+        return `<a href="${href}">${inline(node.children ?? [], opts)}</a>`
       }
       if (node.type === 'linebreak') return '<br />'
       if (opts.strict) throw new Error(`articleHtml: unrenderable inline node '${node.type}'`)

@@ -129,7 +129,7 @@ export const Posts: CollectionConfig<'posts'> = {
                   ]
                 },
               }),
-              // Converts a Markdown string from the SEO tool into Lexical.
+              // Converts a Markdown or HTML string from the SEO tool into Lexical.
               // beforeValidate, not beforeChange: `required` would reject the
               // string first — field validation runs in the beforeChange pass.
               hooks: { beforeValidate: [ingestMarkdownContent] },
