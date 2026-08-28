@@ -1,9 +1,13 @@
 import type { FieldHook } from 'payload'
 
 export const formatSlug = (val: string): string =>
-  val
+  // topical_map.slug arrives as a segment/subcategory/keyword path; take the leaf.
+  (val.split('/').pop() ?? val)
     .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '')
+    // was '' — deleting separators is what glued the path segments together
+    .replace(/[^\w-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
     .toLowerCase()
 
 export const formatSlugHook =
