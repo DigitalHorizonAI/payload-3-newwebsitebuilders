@@ -103,21 +103,23 @@ test.describe('api key access', () => {
     expect(JSON.stringify(await res.json())).not.toContain(ADMIN.email)
   })
 
-  test('the key can delete an article it no longer wants', async ({ request }) => {
+  test('the key cannot delete an article', async ({ request }) => {
     const post = await request.post('/api/posts', {
       headers: { Authorization: adminAuth },
       data: { title: 'ACCESS SPEC — delete target', _status: 'published', content: lexical('x') },
     })
     const { doc } = await post.json()
 
-    // The tool is a replacement for editing in the admin panel, so removing an
-    // article is part of its job. What it still may not touch is anything
-    // outside the blog — see 'the key cannot escalate itself'.
+    // The integration creates, reads and updates; it never removes an article.
+    // Leaving delete on the key was reach it does not use, on a credential that
+    // has been through several hands. Removing an article is an admin job.
     const res = await request.delete(`/api/posts/${doc.id}`, { headers: { Authorization: keyAuth } })
-    expect(res.status()).toBe(200)
+    expect(res.status()).toBe(403)
 
-    const gone = await request.get(`/api/posts/${doc.id}`, { headers: { Authorization: adminAuth } })
-    expect(gone.status(), 'the article is really gone, not just reported deleted').toBe(404)
+    const still = await request.get(`/api/posts/${doc.id}`, { headers: { Authorization: adminAuth } })
+    expect(still.status(), 'the article survived the refused delete').toBe(200)
+
+    await request.delete(`/api/posts/${doc.id}`, { headers: { Authorization: adminAuth } })
   })
 
   test('the key can file an article under a category it creates', async ({ request }) => {
@@ -141,7 +143,7 @@ test.describe('api key access', () => {
     expect(post.status()).toBe(201)
 
     await request.delete(`/api/posts/${(await post.json()).doc.id}`, {
-      headers: { Authorization: keyAuth },
+      headers: { Authorization: adminAuth },
     })
     await request.delete(`/api/categories/${categoryId}`, { headers: { Authorization: keyAuth } })
   })
