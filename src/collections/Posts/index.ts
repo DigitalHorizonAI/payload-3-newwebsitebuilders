@@ -14,6 +14,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+import { authenticated } from '../../access/authenticated'
 import { contentReader } from '../../access/contentReader'
 import { contentWriter } from '../../access/contentWriter'
 import { Banner } from '../../blocks/Banner/config'
@@ -39,11 +40,16 @@ export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
   access: {
     // contentWriter/contentReader, not authenticated: this is the collection an
-    // API key manages. The tool is a replacement for editing in the admin
-    // panel, so it needs the full lifecycle — including removing an article and
-    // seeing its own drafts, neither of which a publish-only key could do.
+    // API key manages, and it needs to see its own drafts, which a read rule of
+    // `authenticated` would hide.
+    //
+    // Delete is the exception, and is deliberately narrower than the rest. The
+    // publishing integration only ever creates, reads and updates; a key that
+    // can also remove published articles is reach it never uses, and the key
+    // has been handled by several people. Removing an article is now an admin
+    // job. Asked for by Melvin, Get Ranked | Ops, 28 Aug 2026.
     create: contentWriter,
-    delete: contentWriter,
+    delete: authenticated,
     read: contentReader,
     update: contentWriter,
   },
