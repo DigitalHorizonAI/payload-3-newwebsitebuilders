@@ -12,7 +12,7 @@
  * Published only, always: `_status` is filtered explicitly AND access control
  * is left on, so a draft cannot leak through either route.
  */
-import type { Endpoint, PayloadRequest, TypedLocale } from 'payload'
+import type { Endpoint, PayloadRequest, TypedFallbackLocale, TypedLocale } from 'payload'
 import type { Category, Media, Post } from '@/payload-types'
 
 import { articleHtml } from '@/lib/articleHtml'
@@ -180,7 +180,7 @@ const publishedOnly = { _status: { equals: 'published' } }
  */
 const resolveLocale = (
   req: PayloadRequest,
-): { locale?: TypedLocale; error?: string } => {
+): { locale?: TypedLocale; fallbackLocale?: TypedFallbackLocale; error?: string } => {
   const requested = (req.query as Record<string, string | undefined>)?.locale
 
   if (!requested) return {}
@@ -198,7 +198,17 @@ const resolveLocale = (
   }
 
   // Safe: `requested` was just checked against the configured locale codes.
-  return { locale: requested as TypedLocale }
+  //
+  // `fallbackLocale: 'none'` is the point of this whole function. The CMS is
+  // configured `fallback: true`, so an article written only in German came
+  // back — in German — when the build asked for English, and the German blog
+  // then dropped it as "untranslated" because it looked identical to the
+  // English answer. Articles are now written per language rather than
+  // translated, so a locale must answer with its own content or with nothing.
+  //
+  // Only when a locale was explicitly asked for: an unlocalized CMS, and any
+  // caller that sends no ?locale=, keeps exactly the behaviour it had.
+  return { locale: requested as TypedLocale, fallbackLocale: 'none' }
 }
 
 export const articlesListEndpoint: Endpoint = {
@@ -207,7 +217,7 @@ export const articlesListEndpoint: Endpoint = {
   handler: async (req: PayloadRequest) => {
     const { limit, page, category } = req.query as Record<string, string | undefined>
 
-    const { locale, error } = resolveLocale(req)
+    const { locale, fallbackLocale, error } = resolveLocale(req)
     if (error) return json({ error }, 400)
 
     // A caller asking for 10,000 articles should get a sane page, not a
@@ -220,6 +230,7 @@ export const articlesListEndpoint: Endpoint = {
       depth: 1,
       draft: false,
       locale,
+      fallbackLocale,
       overrideAccess: false,
       limit: Number.isFinite(parsedLimit)
         ? Math.min(Math.max(parsedLimit, 1), MAX_LIMIT)
@@ -245,13 +256,24 @@ export const articlesListEndpoint: Endpoint = {
         byline: true,
       },
       sort: '-publishedAt',
+      // Without fallback, a post with no version in this locale still comes
+      // back — as a row whose localized fields are simply absent. Requiring
+      // the slug to exist in the answering locale is what turns "there is no
+      // translation" into "it is not in this listing", and it is why the
+      // detail call for such a post 404s instead of serving English words at
+      // a German URL.
+      //
       // ponytail: matches on category title because Categories has no slug
       // field — `like` is ILIKE on Postgres, so ?category=automation works
       // regardless of case. Add a slug to Categories if exact matching or
       // stable URLs for category pages are ever needed.
-      where: category
-        ? { and: [publishedOnly, { 'categories.title': { like: category } }] }
-        : publishedOnly,
+      where: {
+        and: [
+          publishedOnly,
+          ...(locale ? [{ slug: { exists: true } }] : []),
+          ...(category ? [{ 'categories.title': { like: category } }] : []),
+        ],
+      },
     })
 
     return json({
@@ -275,7 +297,7 @@ export const articleBySlugEndpoint: Endpoint = {
       return json({ error: 'A slug is required.' }, 400)
     }
 
-    const { locale, error } = resolveLocale(req)
+    const { locale, fallbackLocale, error } = resolveLocale(req)
     if (error) return json({ error }, 400)
 
     const result = await req.payload.find({
@@ -283,6 +305,7 @@ export const articleBySlugEndpoint: Endpoint = {
       depth: 2, // one level deeper: related posts need their own cover images
       draft: false,
       locale,
+      fallbackLocale,
       overrideAccess: false,
       limit: 1,
       pagination: false,
