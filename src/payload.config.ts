@@ -85,7 +85,7 @@ export default buildConfig({
    * localized after content exists is not.
    */
   localization: {
-    locales: ['en', 'nl', 'de', 'es'],
+    locales: ['en', 'nl', 'de', 'es', 'fr'],
     defaultLocale: 'en',
     fallback: true,
   },
