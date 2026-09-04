@@ -27,9 +27,16 @@ export async function generateStaticParams() {
     },
   })
 
-  const params = posts.docs.map(({ slug }) => {
-    return { slug }
-  })
+  // An article translated into some locales and not others has no slug in the
+  // rest, and Next refuses to build a param that is not a string - one such
+  // article reds the whole deploy. The pipeline publishes per-locale by
+  // design, so skipping is the right answer: a locale answers with its own
+  // content or with nothing.
+  const params = posts.docs
+    .filter(({ slug }) => typeof slug === 'string' && slug.length > 0)
+    .map(({ slug }) => {
+      return { slug }
+    })
 
   return params
 }
