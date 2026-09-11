@@ -66,6 +66,40 @@ export default buildConfig({
       // exhausts Postgres's connection cap (53300 "too many clients") and the
       // build fails. 4 per pool keeps even a 17-worker build under the cap.
       max: 4,
+      // All three added 11 Sep 2026 after a fourteen-day silent outage on a sibling
+      // CMS, and rolled across the whole fleet because every one of them shared the
+      // bare pool. Every pooled connection went stale; with no keepalive nothing
+      // detected it and with no acquire timeout every DB-backed request queued until
+      // Railway's 300 s gateway timeout. Meanwhile /api/access and the admin shell
+      // kept answering in 0.3 s, so the service read healthy while the public site
+      // served a fourteen-day-old cached page.
+      //
+      // keepAlive lets TCP surface a dead socket so the pool can discard it, but
+      // it does nothing on its own: pg defaults keepAliveInitialDelayMillis to 0
+      // (pg/lib/client.js:82) and libuv reads 0 as "enable SO_KEEPALIVE, leave
+      // TCP_KEEPIDLE alone", so Linux's tcp_keepalive_time applies and the first
+      // probe is 7200 s away. Setting it to 10 s moves that FIRST probe, and
+      // only that: Node's setKeepAlive takes no interval or count, so how long
+      // after the first unanswered probe the socket is declared dead comes from
+      // the container's tcp_keepalive_intvl and tcp_keepalive_probes, which we
+      // have not measured. Minutes rather than hours - do not quote a figure.
+      //
+      // connectionTimeoutMillis bounds the queue wait, not just the dial: when it
+      // is unset pg-pool pushes a pending request with no timer at all
+      // (pg-pool/index.js:206-207), which is why one wedged pool hangs every
+      // later request forever. Neither option prevents the outage — together
+      // they turn a silent hang into a fast, visible error.
+      //
+      // ⛔ Deliberately no statement_timeout: `payload migrate` runs through this
+      // same pool during the build, and a long migration must not be aborted.
+      // ⛔ And deliberately no query_timeout, which looks like the missing piece
+      // and is not. It abandons the query client-side without destroying the
+      // socket and without emitting 'error' on the client (client.js:636-660,
+      // query.js:122-134), so pool._remove never runs and a mid-protocol
+      // connection is returned to the pool while the server still runs the query.
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10_000,
+      connectionTimeoutMillis: 10_000,
     },
   }),
   collections: [Pages, Posts, Media, Categories, Users, ApiClients],
