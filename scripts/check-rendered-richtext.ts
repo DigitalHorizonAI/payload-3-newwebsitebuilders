@@ -56,8 +56,12 @@ const FIXTURE_SLUG = 'what-a-small-business-website-actually-costs'
 const baseUrl = (process.env.RENDER_CHECK_URL ?? 'http://localhost:3220').replace(/\/$/, '')
 
 const failures: string[] = []
-const check = (label: string, ok: boolean, detail: string) => {
-  if (!ok) failures.push(`${label}: ${detail}`)
+// Every assertion prints its own line, pass or fail. A green check that shows
+// nothing it checked cannot be audited by anyone who did not write it, and
+// this is the only check that covers the rich-text render path.
+const check = (label: string, name: string, ok: boolean, detail: string) => {
+  console.log(`${ok ? 'PASS' : 'FAIL'}  ${label.padEnd(8)} ${name.padEnd(24)} ${detail}`)
+  if (!ok) failures.push(`${label}: ${name} — ${detail}`)
 }
 
 // This reads a fixture that only ever exists locally. Pointing it at a
@@ -73,12 +77,27 @@ if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(baseUrl)) {
 }
 
 const get = async (path: string) => {
-  // `connection: close` so no keep-alive socket outlives the script.
-  const response = await fetch(`${baseUrl}${path}`, { headers: { connection: 'close' } })
-  if (!response.ok) {
-    throw new Error(
-      `GET ${baseUrl}${path} returned ${response.status}. Is the server running on ${baseUrl}?`,
+  let response: Response
+  try {
+    // `connection: close` so no keep-alive socket outlives the script.
+    response = await fetch(`${baseUrl}${path}`, { headers: { connection: 'close' } })
+  } catch {
+    // Without this, no server at all surfaces as a raw undici TypeError and a
+    // stack trace. A check that cannot reach its target should say so in one
+    // line and say what to do about it.
+    console.error(
+      `No server at ${baseUrl} (GET ${path} refused).\n` +
+        `  Start one:  PORT=3220 pnpm dev      (or pnpm build && pnpm start)\n` +
+        `  Seed it:    pnpm payload run ./scripts/seed-local.ts`,
     )
+    process.exit(1)
+  }
+  if (!response.ok) {
+    console.error(
+      `GET ${baseUrl}${path} returned ${response.status}.\n` +
+        `  If this is a 404, the fixture is missing: pnpm payload run ./scripts/seed-local.ts`,
+    )
+    process.exit(1)
   }
   return response
 }
@@ -107,8 +126,11 @@ const stored = new Set(nodeTypes(doc.content?.root))
 for (const type of ['table', 'horizontalrule', 'autolink']) {
   check(
     'fixture',
+    `${type} node stored`,
     stored.has(type),
-    `the seeded post has no \`${type}\` node, so a missing element on the page would be red for the wrong reason. Re-run seed-local.ts.`,
+    stored.has(type)
+      ? 'present in the seeded document'
+      : `MISSING — a missing element on the page would be red for the wrong reason. Re-run seed-local.ts.`,
   )
 }
 
@@ -124,7 +146,12 @@ const controls: [string, string][] = [
   ['prose around the link', 'are worth re-checking each year'],
 ]
 for (const [label, token] of controls) {
-  check('page', html.includes(token), `${label} is missing — the page did not render (${path})`)
+  check(
+    'page',
+    label,
+    html.includes(token),
+    html.includes(token) ? `"${token}"` : `MISSING "${token}" — the page did not render (${path})`,
+  )
 }
 
 // 3 — the three node types reached the HTML. Tag-anchored, never bare text.
@@ -141,8 +168,9 @@ const assertions: [string, string][] = [
 for (const [label, token] of assertions) {
   check(
     'render',
+    label,
     html.includes(token),
-    `${label} not in the rendered HTML (looked for \`${token}\`)`,
+    html.includes(token) ? token : `MISSING — looked for \`${token}\``,
   )
 }
 
