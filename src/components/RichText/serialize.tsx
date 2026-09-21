@@ -4,7 +4,13 @@ import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import React, { Fragment, JSX } from 'react'
 import { CMSLink } from '@/components/Link'
-import { DefaultNodeTypes, SerializedBlockNode } from '@payloadcms/richtext-lexical'
+import {
+  DefaultNodeTypes,
+  SerializedBlockNode,
+  SerializedTableCellNode,
+  SerializedTableNode,
+  SerializedTableRowNode,
+} from '@payloadcms/richtext-lexical'
 import type { BannerBlock as BannerBlockProps } from '@/payload-types'
 
 import {
@@ -21,8 +27,12 @@ import type {
   MediaBlock as MediaBlockProps,
 } from '@/payload-types'
 
+// The table nodes are not in `DefaultNodeTypes`: the table feature is still
+// experimental, so its node types ship separately even though the feature is
+// registered on posts.content.
 export type NodeTypes =
   | DefaultNodeTypes
+  | SerializedTableNode
   | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
 
 type Props = {
@@ -189,6 +199,74 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 </blockquote>
               )
             }
+            case 'table': {
+              // Mirrors the `table`/`tableRow` pair in src/lib/articleHtml.ts,
+              // which renders the same Lexical tree as the HTML string the
+              // static site splices in. Two implementations of one algorithm
+              // drift, so the rules are kept identical: headerState picks th
+              // over td, a row whose cells are all header cells belongs to
+              // thead, and an empty section is omitted rather than rendered.
+              //
+              // Rows and cells are walked here instead of being handed back to
+              // the switch above, because `tablerow` and `tablecell` have no
+              // cases there and would come back as null.
+              const rows = (node.children ?? []) as SerializedTableRowNode[]
+              const cellsOf = (row: SerializedTableRowNode) =>
+                (row.children ?? []) as SerializedTableCellNode[]
+              const isHeaderRow = (row: SerializedTableRowNode) =>
+                cellsOf(row).length > 0 && cellsOf(row).every((cell) => (cell.headerState ?? 0) > 0)
+
+              const renderRow = (row: SerializedTableRowNode, rowIndex: number) => (
+                <tr key={rowIndex}>
+                  {cellsOf(row).map((cell, cellIndex) => {
+                    const Cell = (cell.headerState ?? 0) > 0 ? 'th' : 'td'
+                    // A cell holds paragraphs; they are unwrapped so the cell
+                    // reads inline rather than nesting a <p> in every box.
+                    // Only `paragraph` is unwrapped, not anything with
+                    // children: a list in a cell has to keep its ul/ol, and
+                    // unwrapping it would drop the wrapper and leave loose
+                    // <li>s. Anything else goes through the switch as usual,
+                    // which is a small, deliberate improvement on articleHtml
+                    // — it unwraps every child and would flatten such a list.
+                    const cellChildren = (cell.children ?? []).flatMap((child) => {
+                      const wrapper = child as { type?: string; children?: unknown[] }
+                      return wrapper.type === 'paragraph' && Array.isArray(wrapper.children)
+                        ? wrapper.children
+                        : [child]
+                    })
+                    return (
+                      <Cell key={cellIndex}>
+                        {serializeLexical({ nodes: cellChildren as NodeTypes[] })}
+                      </Cell>
+                    )
+                  })}
+                </tr>
+              )
+
+              const headerRows = rows.filter(isHeaderRow)
+              const bodyRows = rows.filter((row) => !isHeaderRow(row))
+
+              return (
+                // `table-scroll` keeps the class the static site's markup
+                // carries; `overflow-x-auto` is what actually makes a wide
+                // table scroll here, because this app styles the table itself
+                // but has no rule for the wrapper.
+                <div className="table-scroll col-start-2 overflow-x-auto" key={index}>
+                  <table>
+                    {headerRows.length > 0 && <thead>{headerRows.map(renderRow)}</thead>}
+                    {bodyRows.length > 0 && <tbody>{bodyRows.map(renderRow)}</tbody>}
+                  </table>
+                </div>
+              )
+            }
+            case 'horizontalrule': {
+              return <hr className="col-start-2" key={index} />
+            }
+            // An `autolink` is a bare URL the editor linkified. It is a
+            // different node type from `link` but carries the same `url`
+            // field, so it renders the same way — as articleHtml.ts already
+            // treats the two.
+            case 'autolink':
             case 'link': {
               const fields = node.fields
 

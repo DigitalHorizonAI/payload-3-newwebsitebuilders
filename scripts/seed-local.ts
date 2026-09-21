@@ -28,14 +28,54 @@ const text = (t: string) => ({
   version: 1,
 })
 
-const para = (t: string) => ({
+/** Plain prose, or a mix of text and inline nodes for a paragraph that
+ * contains a link. */
+const para = (t: string | object[]) => ({
   type: 'paragraph',
-  children: [text(t)],
+  children: typeof t === 'string' ? [text(t)] : t,
   direction: 'ltr',
   format: '',
   indent: 0,
   textFormat: 0,
   version: 1,
+})
+
+const container = (type: string, children: object[]) => ({
+  type,
+  children,
+  direction: 'ltr',
+  format: '',
+  indent: 0,
+  version: 1,
+})
+
+/** A table in the shape the Markdown/HTML importer actually produces: cells
+ * wrap their text in a paragraph, and a header cell carries headerState 1
+ * while a body cell carries 0. The first row is the header row. */
+const table = (rows: string[][]) =>
+  container(
+    'table',
+    rows.map((cells, rowIndex) =>
+      container(
+        'tablerow',
+        cells.map((cell) => ({
+          ...container('tablecell', [para(cell)]),
+          headerState: rowIndex === 0 ? 1 : 0,
+          colSpan: 1,
+          rowSpan: 1,
+        })),
+      ),
+    ),
+  )
+
+const horizontalRule = () => ({ type: 'horizontalrule', version: 1 })
+
+/** A bare URL the editor linkified. No feature registered in this repo emits
+ * one, so it is built here by hand — the import scripts write Lexical objects
+ * directly and can send one, and articleHtml already renders it. */
+const autolink = (url: string) => ({
+  ...container('autolink', [text(url)]),
+  fields: { linkType: 'custom', url },
 })
 
 const heading = (t: string) => ({
@@ -48,10 +88,16 @@ const heading = (t: string) => ({
   version: 1,
 })
 
-const body = (paragraphs: (string | { heading: string })[]) => ({
+const body = (paragraphs: (string | { heading: string } | object)[]) => ({
   root: {
     type: 'root',
-    children: paragraphs.map((p) => (typeof p === 'string' ? para(p) : heading(p.heading))),
+    children: paragraphs.map((p) => {
+      if (typeof p === 'string') return para(p)
+      if ('heading' in p && typeof p.heading === 'string') return heading(p.heading)
+      // Already a Lexical node — a table, a rule, anything the two helpers
+      // above do not cover.
+      return p
+    }),
     direction: 'ltr',
     format: '',
     indent: 0,
@@ -122,6 +168,33 @@ const POSTS = [
       { heading: 'Capture, then qualify' },
       'Get the details down before deciding whether the lead is worth pursuing. A half-recorded call that turns out to matter cannot be recovered.',
       'The agent that asks one more question is cheaper than the follow-up email that never gets answered.',
+    ],
+  },
+  {
+    // Carries every construct the rich-text serializer has to render that
+    // plain prose does not exercise: a table with a header row, a horizontal
+    // rule and a bare linkified URL. Seeded so the rendered blog page can be
+    // checked against real HTML rather than against a serializer unit test —
+    // a node type falling through the switch is invisible to the latter.
+    title: 'What a small business website actually costs',
+    slug: 'what-a-small-business-website-actually-costs',
+    description:
+      'The same brief gets quoted at $500 and at $50,000. The spread is scope, not skill.',
+    colours: ['#5c9cff', '#ffb35c'],
+    content: [
+      'Ask five builders for a quote on the same site and the answers will not look like they describe the same job. The spread is real, and almost all of it is scope.',
+      { heading: 'What each tier actually includes' },
+      table([
+        ['Tier', 'Typical cost', 'What you get'],
+        ['Template', '$500', 'A bought theme, your logo, your copy'],
+        ['Custom build', '$8,000', 'Design, build and a CMS you can edit'],
+      ]),
+      horizontalRule(),
+      para([
+        text('Figures track the published ranges at '),
+        autolink('https://example.com/pricing'),
+        text(' and are worth re-checking each year.'),
+      ]),
     ],
   },
   {
