@@ -221,14 +221,19 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                   {cellsOf(row).map((cell, cellIndex) => {
                     const Cell = (cell.headerState ?? 0) > 0 ? 'th' : 'td'
                     // A cell holds paragraphs; they are unwrapped so the cell
-                    // reads inline rather than nesting a <p> in every box. A
-                    // child that is not a wrapper falls back to itself, which
-                    // articleHtml would drop.
-                    const cellChildren = (cell.children ?? []).flatMap((child) =>
-                      'children' in child && Array.isArray(child.children)
-                        ? child.children
-                        : [child],
-                    )
+                    // reads inline rather than nesting a <p> in every box.
+                    // Only `paragraph` is unwrapped, not anything with
+                    // children: a list in a cell has to keep its ul/ol, and
+                    // unwrapping it would drop the wrapper and leave loose
+                    // <li>s. Anything else goes through the switch as usual,
+                    // which is a small, deliberate improvement on articleHtml
+                    // — it unwraps every child and would flatten such a list.
+                    const cellChildren = (cell.children ?? []).flatMap((child) => {
+                      const wrapper = child as { type?: string; children?: unknown[] }
+                      return wrapper.type === 'paragraph' && Array.isArray(wrapper.children)
+                        ? wrapper.children
+                        : [child]
+                    })
                     return (
                       <Cell key={cellIndex}>
                         {serializeLexical({ nodes: cellChildren as NodeTypes[] })}
