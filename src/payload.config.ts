@@ -144,9 +144,9 @@ export default buildConfig({
     articleBySlugEndpoint,
   ],
   // The pool options above turn a wedged pool into a fast 500, but nothing
-  // recovers from it: on 28 Aug, before those options, the pool held no
-  // connections and every DB route hung until a manual restart. The watchdog
-  // does that restart itself.
+  // recovers from it: on 28 Aug a sibling CMS's pool held no connections and
+  // every DB route hung until a manual restart. The watchdog does that restart
+  // itself.
   // Not during `next build`, whose workers are short-lived; `payload migrate`
   // never runs onInit.
   onInit: (payload) => {
