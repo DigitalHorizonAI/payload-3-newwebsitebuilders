@@ -138,6 +138,9 @@ importers:
       eslint-config-next:
         specifier: 16.2.10
         version: 16.2.10(@typescript-eslint/parser@8.57.1(eslint@9.39.3(jiti@1.21.6))(typescript@5.7.2))(eslint-plugin-import-x@4.6.1(eslint@9.39.3(jiti@1.21.6))(typescript@5.7.2))(eslint@9.39.3(jiti@1.21.6))(typescript@5.7.2)
+      pg:
+        specifier: 8.20.0
+        version: 8.20.0
       postcss:
         specifier: ^8.5.16
         version: 8.5.16

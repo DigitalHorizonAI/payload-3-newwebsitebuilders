@@ -1,5 +1,5 @@
 // storage-adapter-import-placeholder
-import { postgresAdapter } from '@payloadcms/db-postgres'
+import { postgresAdapter, type PostgresAdapter } from '@payloadcms/db-postgres'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -18,6 +18,7 @@ import { plugins } from './plugins'
 import { articleBySlugEndpoint, articlesListEndpoint } from './endpoints/articles'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL, getPublicSiteURL } from './utilities/getURL'
+import { startPoolWatchdogOnce } from './utilities/poolWatchdog'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -142,6 +143,21 @@ export default buildConfig({
     articlesListEndpoint,
     articleBySlugEndpoint,
   ],
+  // The pool options above turn a wedged pool into a fast 500, but nothing
+  // recovers from it: on 28 Aug, before those options, the pool held no
+  // connections and every DB route hung until a manual restart. The watchdog
+  // does that restart itself.
+  // Not during `next build`, whose workers are short-lived; `payload migrate`
+  // never runs onInit.
+  onInit: (payload) => {
+    if (process.env.NODE_ENV !== 'production' || process.env.NEXT_PHASE === 'phase-production-build') return
+    const db = payload.db as PostgresAdapter
+    startPoolWatchdogOnce({
+      pool: db.pool,
+      newClient: () => new db.pg.Client(db.poolOptions),
+      log: payload.logger,
+    })
+  },
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {

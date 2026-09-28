@@ -26,6 +26,7 @@
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test:e2e": "playwright test",
+    "test:watchdog": "node --test tests/pool-watchdog.test.mjs",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:manual": "cross-env PLAYWRIGHT_SLOW_MO=750 E2E_MANUAL_REVIEW=true playwright test --headed --workers=1"
   },
@@ -75,6 +76,7 @@
     "autoprefixer": "^10.5.2",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.2.10",
+    "pg": "8.20.0",
     "postcss": "^8.5.16",
     "prettier": "^3.9.4",
     "tailwindcss": "^3.4.16",
