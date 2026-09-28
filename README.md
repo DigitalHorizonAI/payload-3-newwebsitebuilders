@@ -101,6 +101,17 @@ If you prefer `npm`, you can run:
 
 `test:e2e:manual` runs the suite in headed mode with a visible slowdown between actions and pauses only at the end of the happy path. While paused, the browser stays open so you can click around and manually inspect seeded content, the admin area, and public pages. When you are done, resume or stop the Playwright session from the inspector/terminal.
 
+### Connection Pool Watchdog Test
+
+In production the app probes its database pool every 30 s. After 3 failed probes in a row, if a fresh connection to the database still succeeds, it logs `[pool-watchdog] Postgres pool wedged` and exits with code 1, so Railway's restart policy (On Failure) restarts it. If the database itself is unreachable, it logs a warning and keeps running, because a restart would not help.
+
+The test runs against a real, throwaway local PostgreSQL and fails when none is configured. It needs Node 22.18 or later, because it loads the TypeScript source directly.
+
+```
+docker run --rm -d --name pool-watchdog-pg-nwb -p 54395:5432 -e POSTGRES_PASSWORD=postgres postgres:16-alpine
+WATCHDOG_TEST_DATABASE_URI=postgres://postgres:postgres@127.0.0.1:54395/postgres pnpm test:watchdog
+```
+
 
 ### Requirements
 
