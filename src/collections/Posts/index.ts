@@ -69,8 +69,9 @@ export const Posts: CollectionConfig<'posts'> = {
     // Posts are written per language, so most have no row in a given locale
     // and the list showed them as <No Title>. A localized `where` runs in the
     // viewed locale without fallback, so this lists only that locale's posts.
-    // Admin only (list view and the rich-text internal-link picker); the API
-    // and the site are unaffected.
+    // It filters the admin Posts list view only: the rich-text internal-link
+    // picker still offers every post (defaultLexical sets enabledCollections,
+    // which bypasses baseFilter), and the API and the site are unaffected.
     baseFilter: () => ({ title: { exists: true } }),
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
