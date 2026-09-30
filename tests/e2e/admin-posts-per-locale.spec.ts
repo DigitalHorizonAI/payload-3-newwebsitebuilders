@@ -68,9 +68,11 @@ test('the admin Posts list shows no untitled rows in any locale', async ({ baseU
     .context()
     .addCookies([{ name: 'payload-token', value: adminAuth.replace('JWT ', ''), url: baseURL! }])
 
+  // en last: the admin remembers the locale per user, and later specs share
+  // this user and open documents without ?locale=.
   for (const [locale, own] of [
-    ['en', 'PER LOCALE EN'],
     ['nl', 'PER LOCALE NL'],
+    ['en', 'PER LOCALE EN'],
   ]) {
     await page.goto(`/admin/collections/posts?locale=${locale}&limit=100`)
     const table = page.locator('table')
