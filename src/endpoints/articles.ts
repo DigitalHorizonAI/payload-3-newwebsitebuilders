@@ -181,17 +181,19 @@ const publishedOnly = { _status: { equals: 'published' } }
 const resolveLocale = (
   req: PayloadRequest,
 ): { locale?: TypedLocale; fallbackLocale?: TypedFallbackLocale; error?: string } => {
-  const requested = (req.query as Record<string, string | undefined>)?.locale
-
-  if (!requested) return {}
-
-  const codes: string[] = req.payload.config.localization
-    ? req.payload.config.localization.localeCodes
-    : []
+  const { localization } = req.payload.config
+  const codes: string[] = localization ? localization.localeCodes : []
 
   // A CMS with no localization configured has nothing to answer here; ignoring
   // the parameter keeps this endpoint identical on single-language sites.
-  if (!codes.length) return {}
+  if (!localization || !codes.length) return {}
+
+  // No ?locale= means the default locale, answered exactly as if it had been
+  // asked for. Left to Payload's own default, a post with no version in that
+  // locale still came back, as a row with no title, no slug and the path
+  // /blog/undefined: 135 of 191 rows on production on 1 Oct 2026.
+  const requested =
+    (req.query as Record<string, string | undefined>)?.locale || localization.defaultLocale
 
   if (!codes.includes(requested)) {
     return { error: `Unknown locale '${requested}'. Available: ${codes.join(', ')}.` }
@@ -205,9 +207,7 @@ const resolveLocale = (
   // then dropped it as "untranslated" because it looked identical to the
   // English answer. Articles are now written per language rather than
   // translated, so a locale must answer with its own content or with nothing.
-  //
-  // Only when a locale was explicitly asked for: an unlocalized CMS, and any
-  // caller that sends no ?locale=, keeps exactly the behaviour it had.
+  // An unlocalized CMS keeps exactly the behaviour it had.
   return { locale: requested as TypedLocale, fallbackLocale: 'none' }
 }
 

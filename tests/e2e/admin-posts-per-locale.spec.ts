@@ -38,8 +38,7 @@ const content = {
 let adminAuth: string
 const created: number[] = []
 
-// The public listing without ?locale= still lists a post with no `en` row, so
-// a de-only post left behind breaks articles-api.spec.ts, which runs later.
+// Later specs share this database and read the public listings.
 test.afterAll(async ({ request }) => {
   for (const id of created) {
     await request.delete(`/api/posts/${id}`, { headers: { Authorization: adminAuth } })
