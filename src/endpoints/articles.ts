@@ -17,7 +17,7 @@ import type { Category, Media, Post } from '@/payload-types'
 
 import { articleHtml } from '@/lib/articleHtml'
 import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
-import { getPublicSiteURL } from '@/utilities/getURL'
+import { getPublicSiteURL, getServerSideURL } from '@/utilities/getURL'
 
 // High enough that every consumer fetches the whole blog in one request. The
 // websites and their sitemap/llms.txt functions all need the complete list, and
@@ -42,11 +42,15 @@ const json = (body: unknown, status = 200) =>
 /**
  * Absolute URL of an uploaded image, or null when none is set. The relation is
  * a bare ID when it hasn't been populated, hence the object check.
+ *
+ * Resolved against this app, not the public site: the files are served from
+ * /api/media here, and newwebsite.builders does not proxy that path, so every
+ * cover resolved against it 404'd. Page URLs below stay on the public site.
  */
 const imageURL = (image: unknown): string | null => {
   if (!image || typeof image !== 'object') return null
   const url = (image as Media).url
-  return url ? new URL(url, getPublicSiteURL()).toString() : null
+  return url ? new URL(url, getServerSideURL()).toString() : null
 }
 
 const titles = (docs: unknown): string[] =>
