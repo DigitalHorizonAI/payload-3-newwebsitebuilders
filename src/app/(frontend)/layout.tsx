@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from 'src/utilities/cn'
-import { Instrument_Serif, Inter, Inter_Tight } from 'next/font/google'
+import localFont from 'next/font/local'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -18,26 +18,29 @@ import { getServerSideURL } from '@/utilities/getURL'
 // The same three families newwebsite.builders loads, so the blog reads as one
 // site: Inter for body, Inter Tight for headings and labels, and Instrument
 // Serif only as the italic accent word inside a headline.
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
+// The files are committed (latin subset, SIL OFL; licences alongside) so the
+// build never has to reach Google Fonts.
+const inter = localFont({
+  src: './fonts/Inter-latin.woff2',
+  weight: '300 500',
   variable: '--font-inter',
   display: 'swap',
 })
 
-const interTight = Inter_Tight({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
+const interTight = localFont({
+  src: './fonts/InterTight-latin.woff2',
+  weight: '300 500',
   variable: '--font-inter-tight',
   display: 'swap',
 })
 
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: ['400'],
-  style: ['italic'],
+const instrumentSerif = localFont({
+  src: './fonts/InstrumentSerif-Italic-latin.woff2',
+  weight: '400',
+  style: 'italic',
   variable: '--font-instrument-serif',
   display: 'swap',
+  adjustFontFallback: 'Times New Roman',
 })
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

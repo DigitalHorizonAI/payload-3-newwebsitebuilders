@@ -18,6 +18,7 @@ import { plugins } from './plugins'
 import { articleBySlugEndpoint, articlesListEndpoint } from './endpoints/articles'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL, getPublicSiteURL } from './utilities/getURL'
+import { SITE } from './utilities/site'
 import { startPoolWatchdogOnce } from './utilities/poolWatchdog'
 
 const filename = fileURLToPath(import.meta.url)
@@ -25,10 +26,11 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
-      beforeLogin: ['@/components/BeforeLogin'],
+    // The browser tab is what an editor sees of this CMS all day: carry
+    // NewWebsite.builders' own icon and name rather than Payload's defaults.
+    meta: {
+      titleSuffix: ` — ${SITE.name}`,
+      icons: [{ rel: 'icon', type: 'image/x-icon', url: '/favicon.ico' }],
     },
     importMap: {
       baseDir: path.resolve(dirname),
