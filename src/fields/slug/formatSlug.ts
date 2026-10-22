@@ -13,6 +13,13 @@ export const formatSlug = (val: string): string =>
 export const formatSlugHook =
   (fallback: string): FieldHook =>
   ({ data, operation, originalDoc, value }) => {
+    // A saved address stays while the slug is locked, whatever the form or an
+    // API call sends; an editor unlocks the slug to change it.
+    const locked = (data?.slugLock ?? originalDoc?.slugLock) !== false
+    if (operation === 'update' && locked && typeof originalDoc?.slug === 'string' && originalDoc.slug) {
+      return originalDoc.slug
+    }
+
     if (typeof value === 'string') {
       return formatSlug(value)
     }
