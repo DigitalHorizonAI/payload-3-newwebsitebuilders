@@ -112,6 +112,14 @@ docker run --rm -d --name pool-watchdog-pg-nwb -p 54395:5432 -e POSTGRES_PASSWOR
 WATCHDOG_TEST_DATABASE_URI=postgres://postgres:postgres@127.0.0.1:54395/postgres pnpm test:watchdog
 ```
 
+### Netlify Build Batching
+
+newwebsite.builders builds its blog pages from this CMS, so a published change reaches the site only after a Netlify build. In production the first save of a published post (or a delete) starts a wait of `NETLIFY_BUILD_BATCH_MINUTES` (default 15); saves during the wait ride along, and one call to `NETLIFY_BUILD_HOOK_URL` goes out when it ends. Each build is a whole-site deploy that costs Netlify credits, which is why saves are not built one by one. Without the hook URL (local dev) nothing is called.
+
+```
+node --test tests/netlify-build-batch.test.mjs
+```
+
 
 ### Requirements
 

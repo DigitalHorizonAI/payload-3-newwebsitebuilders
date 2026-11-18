@@ -11,3 +11,7 @@ export const databaseURL =
   `postgres://${postgresUser}:${postgresPassword}@127.0.0.1:${postgresPort}/${postgresDb}`
 
 export const payloadSecret = process.env.PAYLOAD_SECRET ?? 'playwright-secret'
+
+// A fake Netlify build hook the e2e server calls instead of a real one (netlify-build-hook.spec.ts listens on it).
+export const buildHookPort = 54399
+export const buildHookURL = `http://127.0.0.1:${buildHookPort}/netlify-build-hook`
