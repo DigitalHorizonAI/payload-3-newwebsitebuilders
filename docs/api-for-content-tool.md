@@ -150,7 +150,8 @@ older ones to link to it costs one build, not several. When checking whether
 something worked, read it back from `cms.newwebsite.builders` first — that
 separates "it did not publish" from "the build has not run yet".
 
-The sitemap updates with that same build.
+The sitemap updates as soon as an article is published, unpublished, renamed or
+deleted, so it needs no waiting.
 
 ## Issuing and revoking keys (admin)
 
