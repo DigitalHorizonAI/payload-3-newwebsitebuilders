@@ -142,11 +142,13 @@ Use the returned `doc.id` as `meta.image` when creating the article.
 Once published it is live at `https://newwebsite.builders/blog/<slug>`, listed
 on `/blog`, and included in `https://newwebsite.builders/blog-sitemap.xml`.
 
-One delay is normal and is not a fault: the public site fetches from the CMS
-with a short cache, so a change can take **around five minutes** to appear on
-`newwebsite.builders/blog` even though it is immediate in the CMS. When checking
-whether something worked, read it back from `cms.newwebsite.builders` first —
-that separates "it did not publish" from "the cache has not caught up".
+One delay is normal and is not a fault: the public site is rebuilt from the
+CMS in batches, so a change appears on `newwebsite.builders/blog` **about 15
+minutes** after the save, even though it is immediate in the CMS. Saves close
+together go out in the same build, so publishing an article and then editing
+older ones to link to it costs one build, not several. When checking whether
+something worked, read it back from `cms.newwebsite.builders` first — that
+separates "it did not publish" from "the build has not run yet".
 
 The sitemap updates as soon as an article is published, unpublished, renamed or
 deleted, so it needs no waiting.

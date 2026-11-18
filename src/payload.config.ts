@@ -20,6 +20,7 @@ import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL, getPublicSiteURL } from './utilities/getURL'
 import { SITE } from './utilities/site'
 import { startPoolWatchdogOnce } from './utilities/poolWatchdog'
+import { startNetlifyBuildBatch } from './collections/Posts/hooks/triggerNetlifyBuild'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -151,7 +152,7 @@ export default buildConfig({
   // itself.
   // Not during `next build`, whose workers are short-lived; `payload migrate`
   // never runs onInit.
-  onInit: (payload) => {
+  onInit: async (payload) => {
     if (process.env.NODE_ENV !== 'production' || process.env.NEXT_PHASE === 'phase-production-build') return
     const db = payload.db as PostgresAdapter
     startPoolWatchdogOnce({
@@ -159,6 +160,7 @@ export default buildConfig({
       newClient: () => new db.pg.Client(db.poolOptions),
       log: payload.logger,
     })
+    await startNetlifyBuildBatch(payload)
   },
   secret: process.env.PAYLOAD_SECRET,
   sharp,

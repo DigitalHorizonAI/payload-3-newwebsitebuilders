@@ -1,6 +1,6 @@
 import { defineConfig } from '@playwright/test'
 
-import { baseURL, databaseURL, payloadSecret, port } from './tests/e2e/env'
+import { baseURL, buildHookURL, databaseURL, payloadSecret, port } from './tests/e2e/env'
 
 const slowMo = Number(process.env.PLAYWRIGHT_SLOW_MO ?? '0')
 
@@ -41,6 +41,9 @@ export default defineConfig({
       DISABLE_SEARCH_SYNC: 'true',
       PAYLOAD_SECRET: payloadSecret,
       NEXT_PUBLIC_SERVER_URL: baseURL,
+      // Never a real hook: a URL in the shell would make every e2e save start a Netlify build.
+      NETLIFY_BUILD_HOOK_URL: buildHookURL,
+      NETLIFY_BUILD_BATCH_MINUTES: '0.1',
     },
     timeout: 180000,
   },
