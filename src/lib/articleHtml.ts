@@ -108,19 +108,114 @@ type LexicalNode = {
   tag?: string
   headerState?: number
   fields?: Record<string, unknown>
+  /** An `upload` node's media: a bare id, or the doc when populated. */
+  value?: unknown
   children?: LexicalNode[]
 }
 
-export type ResolvedMedia = { url: string; alt: string }
+type Content = { root?: { children?: LexicalNode[] } } | null | undefined
+
+export type ResolvedMedia = {
+  url: string
+  alt: string
+  width?: number
+  height?: number
+  srcset?: string
+}
 
 export type ArticleHtmlOptions = {
   /** Throw on a node this serializer cannot render, instead of dropping it.
    * The importer runs strict — a silent drop is the exact failure the whole
    * re-import exists to fix. The public endpoint stays lenient. */
   strict?: boolean
-  /** Looks up a media document for mediaBlock nodes; absent means images
-   * render as nothing (the corpus has none). */
-  resolveMedia?: (id: unknown) => Promise<ResolvedMedia | null>
+  /** Looks up the media of `upload` nodes and mediaBlocks; absent means
+   * pictures render as nothing (the imported corpus has none). */
+  resolveMedia?: (value: unknown) => Promise<ResolvedMedia | null>
+}
+
+/** The media fields a picture needs (a subset of the Media collection). */
+export type MediaDoc = {
+  id: number | string
+  url?: string | null
+  alt?: string | null
+  mimeType?: string | null
+  width?: number | null
+  height?: number | null
+  sizes?: Record<string, { url?: string | null; width?: number | null } | null | undefined> | null
+}
+
+/** The picture's media, per node kind: an `upload` node holds it in `value`,
+ * a mediaBlock in `fields.media`. */
+const mediaOf = (node: LexicalNode): unknown =>
+  node.type === 'upload'
+    ? node.value
+    : node.type === 'block' && node.fields?.blockType === 'mediaBlock'
+      ? node.fields.media
+      : undefined
+
+/** Ids of the pictures whose media is not populated — all of them in
+ * practice: Payload leaves an in-text upload node's value as a bare id at any
+ * depth. Lets the caller fetch them in one read instead of one per picture. */
+export const bareMediaIds = (content: Content): (number | string)[] => {
+  const ids = (content?.root?.children ?? [])
+    .map(mediaOf)
+    .filter((v): v is number | string => typeof v === 'number' || typeof v === 'string')
+  return [...new Set(ids)]
+}
+
+// Variants with the original's aspect ratio (Media.ts); thumbnail is too small
+// to be worth listing and square is cropped.
+const SRCSET_SIZES = ['small', 'medium', 'large', 'xlarge']
+
+/** The prose column is 68ch, under 720px: a phone picks the 600w/900w file.
+ * Known limit: a wider column only makes the browser pick a larger file. */
+const IMG_SIZES = '(max-width: 720px) 100vw, 720px'
+
+/** A media doc as an in-text picture, or null when it is not one: no doc
+ * (deleted media), not an image, or a URL that is neither https nor this CMS's
+ * own origin (which is http on a local build). */
+const inTextImage = (doc: MediaDoc | undefined, origin: string): ResolvedMedia | null => {
+  if (!doc || !doc.mimeType?.startsWith('image/')) return null
+  const own = new URL(origin).origin
+  const safe = (url: string | null | undefined): string | null => {
+    if (!url) return null
+    try {
+      const u = new URL(url, origin)
+      return u.protocol === 'https:' || u.origin === own ? u.toString() : null
+    } catch {
+      return null
+    }
+  }
+  const url = safe(doc.url)
+  if (!url) return null
+  const candidates = [
+    ...SRCSET_SIZES.map((name) => doc.sizes?.[name]).map((s) => ({
+      url: safe(s?.url),
+      width: s?.width,
+    })),
+    { url, width: doc.width },
+  ].filter((c): c is { url: string; width: number } => !!c.url && !!c.width)
+  return {
+    url,
+    alt: doc.alt ?? '',
+    width: doc.width ?? undefined,
+    height: doc.height ?? undefined,
+    srcset:
+      candidates.length > 1 ? candidates.map((c) => `${c.url} ${c.width}w`).join(', ') : undefined,
+  }
+}
+
+/** `resolveMedia` over media docs read up front: a populated value is used
+ * as-is, a bare id is looked up in `docs`. */
+export const mediaResolver = (
+  docs: MediaDoc[],
+  origin: string,
+): NonNullable<ArticleHtmlOptions['resolveMedia']> => {
+  const byId = new Map(docs.map((d) => [String(d.id), d]))
+  return async (value) => {
+    const doc = value && typeof value === 'object' ? (value as MediaDoc) : byId.get(String(value))
+    return inTextImage(doc, origin)
+  }
 }
 
 const escapeText = (s: string) =>
@@ -209,6 +304,27 @@ const banner = (fields: Record<string, unknown>, opts: ArticleHtmlOptions): stri
   )
 }
 
+/** An `upload` node or mediaBlock as a figure. The site has no hand-written
+ * picture markup to match; this is the shape its `.prose figure`/`.prose img`
+ * styles expect, with width/height so the page does not shift as it loads. */
+const picture = async (node: LexicalNode, opts: ArticleHtmlOptions): Promise<string> => {
+  const value = mediaOf(node)
+  const media = await opts.resolveMedia?.(value)
+  if (!media) {
+    if (opts.strict) {
+      const id = value && typeof value === 'object' ? (value as { id?: unknown }).id : value
+      throw new Error(`articleHtml: ${node.type} media ${String(id)} did not resolve to a picture`)
+    }
+    return ''
+  }
+  const attrs = [`src="${escapeAttr(media.url)}"`]
+  if (media.srcset) attrs.push(`srcset="${escapeAttr(media.srcset)}"`, `sizes="${IMG_SIZES}"`)
+  attrs.push(`alt="${escapeAttr(media.alt)}"`)
+  if (media.width && media.height) attrs.push(`width="${media.width}"`, `height="${media.height}"`)
+  attrs.push('loading="lazy"', 'decoding="async"')
+  return `<figure><img ${attrs.join(' ')} /></figure>`
+}
+
 const block = async (node: LexicalNode, opts: ArticleHtmlOptions): Promise<string> => {
   const fields = node.fields ?? {}
   const blockType = fields.blockType
@@ -220,11 +336,7 @@ const block = async (node: LexicalNode, opts: ArticleHtmlOptions): Promise<strin
     // text on every article page.
     return `<pre><code>${String(fields.code ?? '')}</code></pre>`
   }
-  if (blockType === 'mediaBlock') {
-    const media = await opts.resolveMedia?.(fields.media)
-    if (!media) return ''
-    return `<figure><img src="${escapeAttr(media.url)}" alt="${escapeAttr(media.alt)}" loading="lazy" /></figure>`
-  }
+  if (blockType === 'mediaBlock') return picture(node, opts)
   if (opts.strict) throw new Error(`articleHtml: unrenderable block '${String(blockType)}'`)
   return ''
 }
@@ -253,6 +365,8 @@ const topLevel = async (node: LexicalNode, opts: ArticleHtmlOptions): Promise<st
       return table(node, opts)
     case 'block':
       return block(node, opts)
+    case 'upload':
+      return picture(node, opts)
     case 'horizontalrule':
       return '<hr />'
     default:
@@ -264,7 +378,7 @@ const topLevel = async (node: LexicalNode, opts: ArticleHtmlOptions): Promise<st
 /** The article body as the website's own HTML: top-level elements separated by
  * a blank line, exactly as the hand-written source files are laid out. */
 export const articleHtml = async (
-  content: { root?: { children?: LexicalNode[] } } | null | undefined,
+  content: Content,
   opts: ArticleHtmlOptions = {},
 ): Promise<string> => {
   const children = content?.root?.children ?? []

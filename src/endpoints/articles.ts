@@ -15,7 +15,7 @@
 import type { Endpoint, PayloadRequest, TypedFallbackLocale, TypedLocale } from 'payload'
 import type { Category, Media, Post } from '@/payload-types'
 
-import { articleHtml } from '@/lib/articleHtml'
+import { articleHtml, bareMediaIds, mediaResolver } from '@/lib/articleHtml'
 import { getPublicDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL, getServerSideURL } from '@/utilities/getURL'
 
@@ -127,21 +127,23 @@ const toListing = (post: Post) => ({
  */
 const contentHTML = async (post: Post, payload: PayloadRequest['payload']): Promise<string> => {
   if (!post.content) return ''
-  return articleHtml(post.content as Parameters<typeof articleHtml>[0], {
-    resolveMedia: async (id) => {
-      // Depth normally populates the media relation, but a bare ID must still
-      // render an image rather than silently dropping it out of the article.
-      let media: unknown = id
-      if (typeof media === 'number' || typeof media === 'string') {
-        media = await payload
-          .findByID({ collection: 'media', id: media, depth: 0 })
-          .catch(() => null)
-      }
-      const url = imageURL(media)
-      if (!url) return null
-      return { url, alt: typeof media === 'object' && media ? ((media as Media).alt ?? '') : '' }
-    },
-  })
+  const content = post.content as Parameters<typeof articleHtml>[0]
+  // Payload never populates an in-text picture (the value stays a bare media
+  // id at any depth), so every picture in the body is read here, in one query.
+  // A failed read fails the request rather than serving the article without
+  // its pictures: the site build stops on a CMS error and retries.
+  const ids = bareMediaIds(content)
+  const docs = ids.length
+    ? (
+        await payload.find({
+          collection: 'media',
+          where: { id: { in: ids } },
+          depth: 0,
+          pagination: false,
+        })
+      ).docs
+    : []
+  return articleHtml(content, { resolveMedia: mediaResolver(docs, getServerSideURL()) })
 }
 
 /** The listing shape plus everything needed to render the article itself. */
